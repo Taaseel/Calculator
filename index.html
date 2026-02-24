@@ -17,6 +17,7 @@
             --obsidian: #111111;
             --soft-white: #FAF9F6;
             --pale-gold: #F9F4ED;
+            --suggest-gold: #F3E5D1;
         }
 
         body {
@@ -78,11 +79,17 @@
             box-shadow: 0 0 0 3px rgba(188, 163, 127, 0.1);
         }
 
+        .input-gold:read-only {
+            background-color: #f9f9f9;
+            color: #444;
+            cursor: default;
+        }
+
         .output-highlight {
-            background: #fdfaf5;
-            border: 2px solid var(--matte-gold);
-            color: var(--dark-brown);
-            font-weight: 900;
+            background: #fdfaf5 !important;
+            border: 2px solid var(--matte-gold) !important;
+            color: var(--dark-brown) !important;
+            font-weight: 900 !important;
         }
 
         .en-font { font-family: 'Verdana', sans-serif !important; }
@@ -100,21 +107,6 @@
             border: 1px solid rgba(188, 163, 127, 0.15);
         }
 
-        .card-title {
-            font-size: 10px;
-            font-weight: 900;
-            color: rgba(0,0,0,0.8);
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .card-subtitle {
-            font-size: 9px;
-            font-weight: 700;
-            color: rgba(0,0,0,0.6);
-            margin-top: 4px;
-        }
-
         .card-header-main {
             font-size: 1.25rem; 
             font-weight: 900;
@@ -123,139 +115,71 @@
             text-align: center;
         }
 
-        /* --- MOBILE SCREEN TWEAKS --- */
+        .mode-toggle-btn {
+            flex: 1;
+            padding: 10px 5px;
+            font-size: 10px;
+            font-weight: 900;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+            background: #f5f5f5;
+            color: #888;
+        }
+        .mode-toggle-btn.active {
+            background: var(--matte-gold);
+            color: #111;
+            border-color: var(--matte-gold);
+            box-shadow: 0 4px 12px rgba(188, 163, 127, 0.3);
+        }
+
+        .suggested-rate-box {
+            background-color: #FFF9E6;
+            border: 1px dashed var(--matte-gold);
+            color: #856404;
+            padding: 12px;
+            border-radius: 1rem;
+            font-size: 10.5px;
+            font-weight: 900;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.4s ease;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- MOBILE SCREEN --- */
         @media (max-width: 768px) {
-            main { 
-                grid-template-columns: 1fr !important; 
-                padding: 12px !important;
-                gap: 16px !important;
-            }
+            main { grid-template-columns: 1fr !important; padding: 12px !important; gap: 16px !important; }
             aside { order: 1 !important; }
             section { order: 2 !important; }
             .grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
             .grid-cols-2 { grid-template-columns: 1fr !important; }
             .card-luxury { padding: 1.25rem !important; }
-            .card-header-main { font-size: 1.15rem; }
-            .gold-card { min-height: 130px; }
             #mainChartContainer { height: 320px !important; }
             .input-gold { font-size: 16px; }
             nav h1 { font-size: 11px !important; }
         }
 
-        /* --- PRINT OPTIMIZATION --- */
+        /* --- PRINT --- */
         @media print {
-            @page { 
-                size: A3 landscape; 
-                margin: 10mm; 
-            }
-            
-            nav, .no-print, button { display: none !important; }
-            
-            body { 
-                background: white !important; 
-                -webkit-print-color-adjust: exact !important; 
-                print-color-adjust: exact !important;
-                width: 100% !important;
-            }
-
-            main { 
-                display: grid !important; 
-                grid-template-columns: repeat(12, 1fr) !important; 
-                gap: 5mm !important; 
-                max-width: 100% !important;
-                padding: 0 !important;
-            }
-            
-            aside { 
-                grid-column: span 4 !important; 
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 4mm !important;
-                order: 1 !important;
-            }
-            
-            section { 
-                grid-column: span 8 !important; 
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 4mm !important;
-                order: 2 !important;
-            }
-
+            @page { size: A3 landscape; margin: 10mm; }
+            nav, .no-print, button, .mode-selector-container, #modeDescription, .suggested-rate-box { display: none !important; }
+            body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; width: 100% !important; }
+            main { display: grid !important; grid-template-columns: repeat(12, 1fr) !important; gap: 5mm !important; }
+            aside { grid-column: span 4 !important; order: 1 !important; }
+            section { grid-column: span 8 !important; order: 2 !important; }
             .print-header-container { display: table-header-group !important; }
-            .print-header-content { 
-                display: flex !important; 
-                flex-direction: row-reverse !important; 
-                justify-content: space-between !important; 
-                align-items: center !important; 
-                padding-bottom: 5mm !important; 
-                border-bottom: 3px solid #BCA37F !important; 
-                margin-bottom: 5mm !important;
-            }
-            
-            #mainChartContainer { 
-                height: 480px !important; 
-                border: 2px solid #BCA37F !important;
-            }
-            
-            .card-luxury {
-                break-inside: avoid !important;
-                border: 1px solid #EADBC8 !important;
-                box-shadow: none !important;
-            }
-
-            .print-break-before {
-                break-before: page !important;
-                page-break-before: always !important;
-                margin-top: 15mm !important;
-            }
-
+            .print-header-content { display: flex !important; flex-direction: row-reverse !important; justify-content: space-between !important; align-items: center !important; padding-bottom: 5mm !important; border-bottom: 3px solid #BCA37F !important; margin-bottom: 5mm !important; }
+            #mainChartContainer { height: 480px !important; border: 2px solid #BCA37F !important; }
+            .card-luxury { break-inside: avoid !important; border: 1px solid #EADBC8 !important; }
+            .print-break-before { break-before: page !important; page-break-before: always !important; margin-top: 15mm !important; }
             table { width: 100% !important; border-collapse: collapse !important; border: 1px solid #ddd !important; }
-            th, td { border: 1px solid #eee !important; padding: 10px 5px !important; }
-            tr { page-break-inside: avoid !important; }
-            
-            /* Enhanced Footer for Print */
-            tfoot { 
-                display: table-row-group !important; 
-            }
-            tfoot tr {
-                background-color: #BCA37F !important;
-                -webkit-print-color-adjust: exact !important;
-                border-top: 3px solid #111 !important;
-            }
-            tfoot td {
-                color: black !important;
-                font-weight: 900 !important;
-                border: 1px solid #111 !important;
-            }
-
-            #summaryFooter { 
-                display: grid !important;
-                grid-template-columns: repeat(2, 1fr) !important; 
-                gap: 5mm !important; 
-                width: 100% !important;
-            }
-            
-            .grid-cols-4 { grid-template-columns: repeat(4, 1fr) !important; gap: 3mm !important; }
-            
-            .gold-card {
-                background-color: #BCA37F !important;
-                -webkit-print-color-adjust: exact !important;
-                padding: 1.5rem !important;
-                min-height: 100px !important;
-                border: 1px solid #111 !important;
-            }
-        }
-        
-        /* Table Footer Styling for Screen */
-        #tableFooter tr {
-            background-color: var(--matte-gold);
-            color: #111;
-            font-weight: 900;
-        }
-        #tableFooter td {
-            padding: 1rem 0.5rem;
-            border-top: 2px solid var(--obsidian);
+            tfoot { display: table-row-group !important; }
+            .gold-card { background-color: #BCA37F !important; padding: 1.5rem !important; border: 1px solid #111 !important; }
+            #tableFooter td { background-color: #BCA37F !important; color: black !important; font-weight: 900 !important; border: 1px solid #111 !important; }
         }
     </style>
 </head>
@@ -286,7 +210,7 @@
         </div>
     </nav>
 
-    <!-- Main Wrapper Table (Repeating Header for Print) -->
+    <!-- Main Wrapper Table -->
     <table class="print-table w-full">
         <thead class="print-header-container hidden">
             <tr>
@@ -316,10 +240,8 @@
                 <td>
                     <main class="max-w-[1600px] mx-auto p-4 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
                         
-                        <!-- Inputs Sidebar -->
                         <aside class="lg:col-span-4 space-y-6">
-                            
-                            <!-- Client Info -->
+                            <!-- Card 1: Client Info -->
                             <div class="card-luxury border-r-8 border-r-matte-gold">
                                 <h2 class="card-header-main">بيانات العميل</h2>
                                 <div class="space-y-3">
@@ -344,7 +266,7 @@
                                 </div>
                             </div>
 
-                            <!-- Property Info -->
+                            <!-- Card 2: Property Info -->
                             <div class="card-luxury border-r-8 border-r-matte-gold">
                                 <h2 class="card-header-main">بيانات العقار المبدئية</h2>
                                 <div class="space-y-3">
@@ -365,14 +287,26 @@
                                 </div>
                             </div>
 
-                            <!-- Financial Engine -->
+                            <!-- Card 3: Financial Engine -->
                             <div class="card-luxury border-r-8 border-r-matte-gold">
                                 <h2 class="card-header-main">محرك العمليات المالية</h2>
+                                
+                                <!-- Mode Selector -->
+                                <div class="flex gap-2 p-1 bg-gray-100 rounded-xl mb-3 mode-selector-container">
+                                    <button id="modeValueBtn" class="mode-toggle-btn active" onclick="setCalcMode('value')">تحديد القدرة الشرائية</button>
+                                    <button id="modeDurationBtn" class="mode-toggle-btn" onclick="setCalcMode('duration')">تخطيط جدول التملك</button>
+                                </div>
+
+                                <!-- Explanation Area (Light Gold Background) -->
+                                <div id="modeDescription" class="text-[10px] text-dark-brown font-black mb-5 p-2.5 rounded-xl border border-matte-gold/40 text-center leading-relaxed" style="background-color: var(--suggest-gold);">
+                                    <!-- Dynamic text populated by JS -->
+                                </div>
+
                                 <div class="space-y-5">
                                     <div>
                                         <label class="input-label">متوسط المبيعات اليومية عبر POS</label>
                                         <div class="relative">
-                                            <input type="text" id="mainAmount" placeholder="0" class="input-gold text-2xl font-black en-font" oninput="formatInput(this); calculateAffordability()">
+                                            <input type="text" id="mainAmount" placeholder="0" class="input-gold text-2xl font-black en-font" oninput="formatInput(this); runCalculation()">
                                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400">SAR</span>
                                         </div>
                                     </div>
@@ -380,17 +314,17 @@
                                     <div>
                                         <label class="input-label">نسبة صافي الربح لسنة 2025</label>
                                         <div class="relative">
-                                            <input type="number" id="netProfit" placeholder="0" max="100" class="input-gold text-2xl font-black en-font" oninput="if(this.value > 100) this.value = 100; calculateAffordability()">
+                                            <input type="number" id="netProfit" placeholder="0" max="100" class="input-gold text-2xl font-black en-font" oninput="if(this.value > 100) this.value = 100; runCalculation()">
                                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-bold text-matte-gold">%</span>
                                         </div>
                                     </div>
 
                                     <div class="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label class="input-label">مدة التملك المختارة</label>
-                                            <select id="targetDurationDropdown" class="input-gold text-lg font-bold" onchange="calculateAffordability()">
+                                            <label id="durationLabel" class="input-label font-black text-blue-800">مدة الإدخار المختارة</label>
+                                            <select id="targetDurationDropdown" class="input-gold text-lg font-bold" onchange="runCalculation()">
                                                 <script>
-                                                    for (let i = 1; i <= 24; i++) {
+                                                    for (let i = 1; i <= 18; i++) { 
                                                         document.write(`<option value="${i}">${i} شهر</option>`);
                                                     }
                                                 </script>
@@ -398,20 +332,28 @@
                                         </div>
                                         <div>
                                             <div class="flex items-center justify-between mb-1">
-                                                <label class="text-[10px] font-black text-matte-gold">الاستقطاع %</label>
+                                                <label class="text-[10px] font-black text-matte-gold">نسبة الاستقطاع %</label>
                                                 <div class="flex items-center gap-1 no-print">
                                                     <input type="checkbox" id="manualRateToggle" class="w-3 h-3 accent-matte-gold cursor-pointer" onchange="toggleManualRate()">
                                                 </div>
                                             </div>
-                                            <input type="number" id="deductionRate" readonly value="5" step="0.1" class="input-gold text-lg font-black en-font bg-gray-50" oninput="calculateAffordability()">
+                                            <input type="number" id="deductionRate" readonly value="7" step="0.01" class="input-gold text-lg font-black en-font bg-gray-50" oninput="runCalculation()">
                                         </div>
                                     </div>
+
+                                    <!-- Suggested Rate Notification & Shortfall Warning -->
+                                    <div id="suggestedRateBox" class="suggested-rate-box">
+                                        <div id="rateTextMain">عجز في التغطية: نسبة الاستقطاع المقترحة هي <span id="suggestedRateValue" class="text-red-700 font-black">0.00</span>% للوصول للهدف.</div>
+                                        <hr class="my-2 border-matte-gold/20">
+                                        <div id="shortfallWarningText" class="text-orange-900">بالوضع الراهن سيكون هنالك تغطية العجز بزيادة قيمة <span id="shortfallAmountValue" class="font-black">0</span> في القسط الأخير.</div>
+                                    </div>
+
                                     <p id="rateHint" class="text-[9px] text-gray-500 font-bold italic text-center -mt-3"></p>
 
                                     <div class="p-3 bg-obsidian rounded-xl text-white text-center">
                                         <div class="flex items-center justify-between">
                                             <span class="text-[9px] font-black text-matte-gold">تحميل قسط السعي على الاستقطاع</span>
-                                            <input type="checkbox" id="intensiveMode" class="sr-only peer" checked onchange="calculateAffordability()">
+                                            <input type="checkbox" id="intensiveMode" class="sr-only peer" checked onchange="runCalculation()">
                                             <label for="intensiveMode" class="relative inline-flex items-center cursor-pointer">
                                                 <div class="w-10 h-5 bg-gray-600 rounded-full peer-checked:bg-matte-gold after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-[-100%]"></div>
                                             </label>
@@ -420,14 +362,14 @@
                                 </div>
                             </div>
 
-                            <!-- Cost Analysis -->
+                            <!-- Card 4: Cost Analysis -->
                             <div class="card-luxury border-r-8 border-r-matte-gold">
                                 <h2 class="card-header-main">تحليل تكاليف التملك</h2>
                                 <div class="space-y-5">
                                     <div>
-                                        <label class="input-label">قيمة الوحدة العقارية المتاحة للتملك</label>
+                                        <label id="propertyValueLabel" class="input-label text-matte-gold font-black">قيمة الوحدة العقارية</label>
                                         <div class="relative">
-                                            <input type="text" id="propertyValue" readonly class="input-gold text-2xl font-black en-font output-highlight">
+                                            <input type="text" id="propertyValue" class="input-gold text-2xl font-black en-font output-highlight" oninput="formatInput(this); runCalculation()">
                                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-dark-brown">SAR</span>
                                         </div>
                                     </div>
@@ -435,7 +377,7 @@
                                     <div>
                                         <label class="input-label">النقد المتوفر (الكاش حالياً)</label>
                                         <div class="relative">
-                                            <input type="text" id="initialPayment" placeholder="0" class="input-gold text-xl font-black en-font" oninput="formatInput(this); calculateAffordability()">
+                                            <input type="text" id="initialPayment" placeholder="0" class="input-gold text-xl font-black en-font" oninput="formatInput(this); runCalculation()">
                                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-gray-400">SAR</span>
                                         </div>
                                     </div>
@@ -458,7 +400,7 @@
                         <!-- Results Content -->
                         <section class="lg:col-span-8 space-y-6">
                             
-                            <!-- Plan Summary -->
+                            <!-- Summary Cards -->
                             <div class="card-luxury bg-[#F9F4ED] border-2 border-matte-gold/20 animate-up">
                                 <h2 class="card-header-main text-lg md:text-2xl mb-6 uppercase tracking-widest text-center">خطة التملك والتحصيل</h2>
                                 <div class="grid grid-cols-4 gap-3 md:gap-4">
@@ -496,7 +438,6 @@
                                     <canvas id="mainChart"></canvas>
                                 </div>
 
-                                <!-- Summary Footer (FORCED BREAK IN PRINT) -->
                                 <div class="p-6 md:p-8 mt-6 md:mt-10 bg-[#F9F4ED] md:border-2 border-matte-gold/10 md:rounded-3xl print-break-before">
                                     <h2 class="card-header-main text-lg mb-6 text-center">المبالغ التي يتم سدادها من المشتري</h2>
                                     <div id="summaryFooter" class="grid grid-cols-2 gap-4 md:gap-6">
@@ -512,7 +453,7 @@
                                 </div>
                             </div>
 
-                            <!-- Ledger Table -->
+                            <!-- Table Section -->
                             <div class="card-luxury overflow-hidden">
                                 <div class="px-6 py-4 border-b border-light-gold/20 bg-gray-50/50 text-center">
                                     <h3 class="font-black text-black text-lg">جدول الاستقطاع والتحصيل الشهري</h3>
@@ -530,7 +471,6 @@
                                         </thead>
                                         <tbody id="tableBody" class="text-xs font-bold text-black divide-y divide-light-gold/10">
                                         </tbody>
-                                        <!-- Footer Table for Totals -->
                                         <tfoot id="tableFooter">
                                         </tfoot>
                                     </table>
@@ -545,7 +485,9 @@
 
     <script>
         const formatter = new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        const precisionFormatter = new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 });
         let chart = null;
+        let currentCalcMode = 'value'; 
 
         document.getElementById('exportBtn').addEventListener('click', () => window.print());
 
@@ -557,6 +499,58 @@
         function getRawValue(id) {
             let val = document.getElementById(id).value.replace(/,/g, '');
             return parseFloat(val) || 0;
+        }
+
+        function setCalcMode(mode) {
+            currentCalcMode = mode;
+            const valueBtn = document.getElementById('modeValueBtn');
+            const durationBtn = document.getElementById('modeDurationBtn');
+            const propValInput = document.getElementById('propertyValue');
+            const durationDropdown = document.getElementById('targetDurationDropdown');
+            const durationLabel = document.getElementById('durationLabel');
+            const propValLabel = document.getElementById('propertyValueLabel');
+            const descEl = document.getElementById('modeDescription');
+            const suggestBox = document.getElementById('suggestedRateBox');
+
+            // RESET ALL FINANCIAL FIELDS FOR INDEPENDENT MODES
+            document.getElementById('mainAmount').value = "";
+            document.getElementById('netProfit').value = "";
+            document.getElementById('initialPayment').value = "";
+            propValInput.value = "";
+            durationDropdown.value = "1";
+            
+            // Reset Deduction to default 7% and Auto mode
+            document.getElementById('deductionRate').value = "7";
+            document.getElementById('manualRateToggle').checked = false;
+            toggleManualRate(); 
+
+            // CLEAR RESULTS UI
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
+            document.getElementById('tableFooter').innerHTML = '';
+            document.querySelectorAll('#displayTotalDeduction, #displayNetPropSaving, #displayBrokerTotalPaid, #displayMonthsCount, #totalUpfrontNeeded, #totalDeductionFooter').forEach(el => el.innerText = "0");
+
+            if (mode === 'value') {
+                valueBtn.classList.add('active');
+                durationBtn.classList.remove('active');
+                propValInput.readOnly = true;
+                propValInput.classList.add('output-highlight');
+                durationDropdown.disabled = false;
+                durationDropdown.classList.remove('output-highlight');
+                durationLabel.innerText = "مدة الإدخار المختارة";
+                propValLabel.innerText = "قيمة العقار المتاحة للتملك";
+                descEl.innerHTML = `حدد <span class="text-blue-800 font-black">(المدة)</span> لتعرف <span class="text-matte-gold font-black">(سعر العقار)</span> المتاح لك بناءً على مبيعاتك`;
+                suggestBox.style.display = 'none';
+            } else {
+                durationBtn.classList.add('active');
+                valueBtn.classList.remove('active');
+                propValInput.readOnly = false;
+                propValInput.classList.remove('output-highlight');
+                durationDropdown.disabled = false; 
+                durationDropdown.classList.remove('output-highlight');
+                durationLabel.innerText = "مدة الإدخار المستهدفة";
+                propValLabel.innerText = "قيمة العقار المستهدفة";
+                descEl.innerHTML = `حدد <span class="text-matte-gold font-black">(سعر العقار)</span> و <span class="text-blue-800 font-black">(المدة)</span> لنحدد لك إمكانية التملك`;
+            }
         }
 
         function toggleManualRate() {
@@ -576,54 +570,94 @@
                 hintEl.classList.remove('text-orange-600');
                 updateAutomatedRate();
             }
-            calculateAffordability();
+            runCalculation();
         }
 
         function updateAutomatedRate() {
             if (document.getElementById('manualRateToggle').checked) return parseFloat(document.getElementById('deductionRate').value) || 0;
             const netProfit = parseFloat(document.getElementById('netProfit').value) || 0;
             const hintEl = document.getElementById('rateHint');
-            let rate = 5;
-            if (netProfit >= 25) { rate = 10; hintEl.innerText = "سياسة الربح 25%+: استقطاع 10%"; }
-            else if (netProfit >= 20) { rate = 7; hintEl.innerText = "سياسة الربح 20%+: استقطاع 7%"; }
-            else { rate = 5; hintEl.innerText = "السياسة الافتراضية: استقطاع 5%"; }
+            let rate;
+            
+            if (netProfit >= 20) {
+                rate = 10;
+                hintEl.innerText = "سياسة الربح 20%+: استقطاع 10%";
+            } else {
+                rate = 7;
+                hintEl.innerText = "سياسة الربح أقل من 20%: استقطاع 7%";
+            }
+            
             document.getElementById('deductionRate').value = rate;
             return rate;
         }
 
-        function calculateAffordability() {
+        function runCalculation() {
             const deductionRate = updateAutomatedRate();
-            const targetDuration = parseInt(document.getElementById('targetDurationDropdown').value) || 0;
             const initialCash = getRawValue('initialPayment');
             const mainSales = getRawValue('mainAmount');
+            if (mainSales <= 0) return; 
+            
             const monthlyBase = mainSales * 30 * (deductionRate / 100);
             const isIntensive = document.getElementById('intensiveMode').checked;
+            const suggestBox = document.getElementById('suggestedRateBox');
+            const targetDuration = parseInt(document.getElementById('targetDurationDropdown').value) || 0;
 
-            const k = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
-            const denominator = 1.02875 - (0.02875 * k);
-            const affordablePropValue = (monthlyBase * targetDuration + initialCash) / denominator;
+            const k_intensive = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
+            const denominator = 1.02875 - (0.02875 * k_intensive);
 
-            document.getElementById('propertyValue').value = formatter.format(Math.round(affordablePropValue));
-            calculateLedger(affordablePropValue, initialCash);
+            if (currentCalcMode === 'value') {
+                const affordablePropValue = (monthlyBase * targetDuration + initialCash) / denominator;
+                document.getElementById('propertyValue').value = formatter.format(Math.round(affordablePropValue));
+                calculateLedger(affordablePropValue, targetDuration, initialCash);
+                suggestBox.style.display = 'none';
+            } else {
+                const propertyVal = getRawValue('propertyValue');
+                if (propertyVal <= 0) {
+                    calculateLedger(0, targetDuration, initialCash);
+                    return;
+                }
+                
+                const gap = (propertyVal * 1.02875) - initialCash;
+                const intensiveK = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
+                const saeiPartWithVat = (propertyVal * 0.025) * 1.15;
+                
+                const contributionAtCurrentRate = (monthlyBase * targetDuration) + (intensiveK * saeiPartWithVat);
+
+                if (contributionAtCurrentRate < gap - 1) {
+                    suggestBox.style.display = 'block';
+                    // Calculate suggested rate
+                    const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
+                    document.getElementById('suggestedRateValue').innerText = precisionFormatter.format(neededRate);
+                    
+                    // Calculate shortfall SAR amount
+                    const shortfallAmount = gap - contributionAtCurrentRate;
+                    document.getElementById('shortfallAmountValue').innerText = formatter.format(Math.round(shortfallAmount));
+                } else {
+                    suggestBox.style.display = 'none';
+                }
+                
+                calculateLedger(propertyVal, targetDuration, initialCash);
+            }
         }
 
-        function calculateLedger(propertyVal, initialCash) {
+        function calculateLedger(propertyVal, targetDuration, initialCash) {
             const baseRate = parseFloat(document.getElementById('deductionRate').value) || 0;
             const isIntensive = document.getElementById('intensiveMode').checked;
-            const targetDuration = parseInt(document.getElementById('targetDurationDropdown').value);
             const sales = getRawValue('mainAmount');
-
             const monthlyBase = sales * 30 * (baseRate / 100);
+
             document.querySelectorAll('#displayTotalDeduction').forEach(el => el.innerText = formatter.format(Math.round(sales * (baseRate / 100))));
 
             if (propertyVal <= 0) {
                 document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
-                document.getElementById('tableFooter').innerHTML = ''; return;
+                document.getElementById('tableFooter').innerHTML = ''; 
+                document.querySelectorAll('#displayNetPropSaving, #displayMonthsCount, #totalDeductionFooter, #totalUpfrontNeeded').forEach(el => el.innerText = "0");
+                return;
             }
 
             const saeiPartWithVat = (propertyVal * 0.025) * 1.15;
-            const upfrontNeeded = initialCash + saeiPartWithVat;
             const totalSaeiFullWithVat = (propertyVal * 0.05 * 1.15);
+            const upfrontNeeded = initialCash + saeiPartWithVat;
             const gapToFill = (propertyVal + totalSaeiFullWithVat) - upfrontNeeded;
 
             document.querySelectorAll('#displayBrokerTotalPaid').forEach(el => el.innerText = formatter.format(Math.round(saeiPartWithVat)));
@@ -632,7 +666,7 @@
             document.querySelectorAll('#totalUpfrontNeeded').forEach(el => el.innerText = formatter.format(Math.round(upfrontNeeded)));
 
             const monthlySaei = saeiPartWithVat / 5;
-            let accDed = 0, accNet = 0, labels = [], data = [], html = '', totalPOSSum = 0, totalSaeiSum = 0, totalNetSum = 0;
+            let accDed = 0, labels = [], data = [], html = '', totalPOSSum = 0, totalSaeiSum = 0, totalNetSum = 0;
 
             for (let m = 1; m <= targetDuration; m++) {
                 let curSaei = (m <= 5) ? monthlySaei : 0;
@@ -641,26 +675,21 @@
                 
                 if (!isIntensive && m <= 5) curNet = Math.max(0, monthlyBase - curSaei);
 
-                if (m === targetDuration) {
+                // Check for gap closure logic
+                if (accDed + curPOS >= gapToFill - 1 || m === targetDuration) {
                     curPOS = Math.max(0, gapToFill - accDed);
                     if (m <= 5 && curSaei > 0) {
-                        let totalPotential = isIntensive ? (monthlyBase + curSaei) : monthlyBase;
-                        let ratio = curPOS / totalPotential;
+                        let potentialPortion = isIntensive ? (monthlyBase + curSaei) : monthlyBase;
+                        let ratio = curPOS / (potentialPortion || 1);
                         curNet = isIntensive ? (monthlyBase * ratio) : curPOS;
                         curSaei = isIntensive ? (curSaei * ratio) : 0;
                     } else { curNet = curPOS; curSaei = 0; }
                 }
 
-                accDed += curPOS;
-                accNet += curNet;
-                totalPOSSum += curPOS;
-                totalSaeiSum += curSaei;
-                totalNetSum += curNet;
-
-                labels.push(m + ' M');
-                data.push(Math.round(accDed));
+                accDed += curPOS; totalPOSSum += curPOS; totalSaeiSum += curSaei; totalNetSum += curNet;
+                labels.push(m + ' M'); data.push(Math.round(accDed));
                 
-                const displayPerc = (gapToFill > 0) ? (accDed / gapToFill * 100).toFixed(1) : "100.0";
+                const displayPerc = (gapToFill > 0) ? Math.min(100, (accDed / gapToFill * 100)).toFixed(1) : "100.0";
                 
                 html += `<tr class="text-center">
                     <td class="py-4 font-black text-matte-gold">${m}</td>
@@ -669,18 +698,19 @@
                     <td class="py-4 text-blue-800">${formatter.format(Math.round(curNet))}</td>
                     <td class="py-4"><span class="px-2 py-0.5 bg-gray-100 rounded-full text-[10px] font-black">${displayPerc}%</span></td>
                 </tr>`;
+                
+                if (accDed >= gapToFill - 1) break;
             }
 
             document.getElementById('tableBody').innerHTML = html;
             
-            // Re-generating Footer with absolute styling priority
             document.getElementById('tableFooter').innerHTML = `
                 <tr style="background-color: #BCA37F !important; color: #000 !important; font-weight: 900 !important; text-align: center !important;">
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; border-bottom: 2px solid #111 !important;">الإجمالي</td>
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; border-bottom: 2px solid #111 !important;">${formatter.format(Math.round(totalPOSSum))}</td>
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; border-bottom: 2px solid #111 !important; color: #4A3728 !important;">${formatter.format(Math.round(totalSaeiSum))}</td>
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; border-bottom: 2px solid #111 !important; color: #1e3a8a !important;">${formatter.format(Math.round(totalNetSum))}</td>
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; border-bottom: 2px solid #111 !important;">100%</td>
+                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">الإجمالي</td>
+                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">${formatter.format(Math.round(totalPOSSum))}</td>
+                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #4A3728 !important;">${formatter.format(Math.round(totalSaeiSum))}</td>
+                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #1e3a8a !important;">${formatter.format(Math.round(totalNetSum))}</td>
+                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">${(gapToFill > 0 ? Math.min(100, (totalPOSSum/gapToFill*100)) : 100).toFixed(1)}%</td>
                 </tr>`;
             
             document.querySelectorAll('#displayNetPropSaving').forEach(el => el.innerText = formatter.format(Math.round(totalNetSum)));
@@ -700,6 +730,7 @@
                     const text = formatter.format(Math.round(target));
                     ctx.save(); ctx.font = 'bold 11px Verdana';
                     const textWidth = ctx.measureText(text).width;
+                    const bH = 24; const bW = textWidth + 16;
                     ctx.fillStyle = '#111111'; ctx.strokeStyle = '#BCA37F'; ctx.lineWidth = 1.5;
                     ctx.beginPath(); ctx.roundRect(right + 5, yPos - 12, textWidth + 10, 24, 6); ctx.fill(); ctx.stroke();
                     ctx.fillStyle = '#BCA37F'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
@@ -725,7 +756,7 @@
                 }
             });
         }
-        window.onload = () => { calculateAffordability(); };
+        window.onload = () => { setCalcMode('value'); };
     </script>
 </body>
 </html>
