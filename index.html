@@ -29,6 +29,13 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Force English numbers globally for inputs and results */
+        input, select, .en-font, h3, p, span, td, th {
+            font-variant-numeric: tabular-nums;
+            -webkit-font-feature-settings: "tnum";
+            font-feature-settings: "tnum";
+        }
+
         .input-label {
             display: block;
             font-size: 11px;
@@ -65,12 +72,13 @@
             background: #ffffff;
             border: 1.5px solid #E5E7EB;
             border-radius: 1rem;
-            font-family: 'Verdana', sans-serif !important;
+            font-family: 'Verdana', sans-serif !important; /* Force font that uses English digits */
             text-align: center;
             width: 100%;
             padding: 10px;
             font-size: 14px;
             appearance: none;
+            direction: ltr; /* Ensure input flow is LTR for numbers */
         }
 
         .input-gold:focus {
@@ -277,7 +285,7 @@
                                     <div class="grid grid-cols-2 gap-3">
                                         <div>
                                             <label class="input-label">المساحة التقريبية</label>
-                                            <input type="text" id="unitArea" placeholder="300 م2" class="input-gold">
+                                            <input type="text" id="unitArea" placeholder="300 m2" class="input-gold">
                                         </div>
                                         <div>
                                             <label class="input-label">نوع الوحدة العقارية</label>
@@ -314,7 +322,7 @@
                                     <div>
                                         <label class="input-label">نسبة صافي الربح لسنة 2025</label>
                                         <div class="relative">
-                                            <input type="number" id="netProfit" placeholder="0" max="100" class="input-gold text-2xl font-black en-font" oninput="if(this.value > 100) this.value = 100; runCalculation()">
+                                            <input type="text" id="netProfit" placeholder="0" class="input-gold text-2xl font-black en-font" oninput="formatInput(this); runCalculation()">
                                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-bold text-matte-gold">%</span>
                                         </div>
                                     </div>
@@ -397,7 +405,7 @@
                             </div>
                         </aside>
 
-                        <!-- Results Content -->
+                        <!-- Results -->
                         <section class="lg:col-span-8 space-y-6">
                             
                             <!-- Summary Cards -->
@@ -491,14 +499,39 @@
 
         document.getElementById('exportBtn').addEventListener('click', () => window.print());
 
+        /**
+         * Converts Eastern Arabic numerals (٠-٩) to English numerals (0-9).
+         * @param {string} str - The string to convert.
+         * @returns {string} - Converted string.
+         */
+        function toEnglishDigits(str) {
+            const arabicNumerals = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
+            for (let i = 0; i < 10; i++) {
+                str = str.replace(arabicNumerals[i], i);
+            }
+            return str;
+        }
+
+        /**
+         * Cleans input to ensure only English digits and formatting commas remain.
+         * @param {HTMLInputElement} el - The input element.
+         */
         function formatInput(el) {
-            let val = el.value.replace(/,/g, '');
-            if (!isNaN(val) && val !== "") { el.value = Number(val).toLocaleString('en-US'); }
+            // First convert any Arabic numbers typed to English
+            let val = toEnglishDigits(el.value);
+            // Remove everything except numbers
+            val = val.replace(/,/g, '');
+            
+            if (!isNaN(val) && val !== "") {
+                el.value = Number(val).toLocaleString('en-US');
+            } else {
+                el.value = val;
+            }
         }
 
         function getRawValue(id) {
             let val = document.getElementById(id).value.replace(/,/g, '');
-            return parseFloat(val) || 0;
+            return parseFloat(toEnglishDigits(val)) || 0;
         }
 
         function setCalcMode(mode) {
@@ -575,7 +608,7 @@
 
         function updateAutomatedRate() {
             if (document.getElementById('manualRateToggle').checked) return parseFloat(document.getElementById('deductionRate').value) || 0;
-            const netProfit = parseFloat(document.getElementById('netProfit').value) || 0;
+            const netProfit = getRawValue('netProfit');
             const hintEl = document.getElementById('rateHint');
             let rate;
             
@@ -625,11 +658,11 @@
 
                 if (contributionAtCurrentRate < gap - 1) {
                     suggestBox.style.display = 'block';
-                    // Calculate suggested rate
+                    // Accurate Required Rate Calculation for 2 decimal points
                     const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
                     document.getElementById('suggestedRateValue').innerText = precisionFormatter.format(neededRate);
                     
-                    // Calculate shortfall SAR amount
+                    // Shortfall SAR amount
                     const shortfallAmount = gap - contributionAtCurrentRate;
                     document.getElementById('shortfallAmountValue').innerText = formatter.format(Math.round(shortfallAmount));
                 } else {
@@ -675,7 +708,6 @@
                 
                 if (!isIntensive && m <= 5) curNet = Math.max(0, monthlyBase - curSaei);
 
-                // Check for gap closure logic
                 if (accDed + curPOS >= gapToFill - 1 || m === targetDuration) {
                     curPOS = Math.max(0, gapToFill - accDed);
                     if (m <= 5 && curSaei > 0) {
@@ -730,9 +762,9 @@
                     const text = formatter.format(Math.round(target));
                     ctx.save(); ctx.font = 'bold 11px Verdana';
                     const textWidth = ctx.measureText(text).width;
-                    const bH = 24; const bW = textWidth + 16;
+                    const bH = 24; const bW = textWidth + 10;
                     ctx.fillStyle = '#111111'; ctx.strokeStyle = '#BCA37F'; ctx.lineWidth = 1.5;
-                    ctx.beginPath(); ctx.roundRect(right + 5, yPos - 12, textWidth + 10, 24, 6); ctx.fill(); ctx.stroke();
+                    ctx.beginPath(); ctx.roundRect(right + 5, yPos - 12, bW + 10, 24, 6); ctx.fill(); ctx.stroke();
                     ctx.fillStyle = '#BCA37F'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
                     ctx.fillText(text, right + 10, yPos); ctx.restore();
                 }
