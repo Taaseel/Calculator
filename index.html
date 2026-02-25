@@ -380,7 +380,7 @@
                                         <ul class="text-[10px] space-y-1 pr-1 text-gray-800 font-bold list-none">
                                             <li>- نسبة الاستقطاع المقترحة هي <span id="suggestedRateValue" class="text-red-700 en-font">0.00</span>% للوصول للهدف.</li>
                                             <li id="increaseDurationBullet">- زيادة مدة الادخار المستهدفة.</li>
-                                            <li>- دفع مقدمة (نقداً) بقيمة <span id="shortfallAmountValueSuggest" class="en-font text-blue-900">0</span> لتغطية العجز في القسط الأخير.</li>
+                                            <li>- دفع مقدمة (نقداً) بقيمة <span id="shortfallAmountValueSuggest" class="en-font text-red-700">0</span> لتغطية العجز في القسط الأخير.</li>
                                         </ul>
                                     </div>
 
@@ -445,7 +445,7 @@
 
                         <section class="lg:col-span-8 space-y-6">
                             
-                            <!-- Summary Cards -->
+                            <!-- Summary -->
                             <div class="card-luxury bg-[#F9F4ED] border-2 border-matte-gold/20 animate-up">
                                 <h2 class="card-header-main text-lg md:text-2xl mb-6 uppercase tracking-widest text-center">خطة التملك والتحصيل</h2>
                                 <div class="grid grid-cols-4 gap-3 md:gap-4">
@@ -753,6 +753,18 @@
 
                 const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
 
+                // Calculate suggested duration to cover shortfall
+                const totalSaeiFullWithVat = (propertyVal * 0.05 * 1.15);
+                const upfrontNeeded = initialCash + saeiPartWithVat;
+                const gapToFillTotal = (propertyVal + totalSaeiFullWithVat) - upfrontNeeded;
+                let suggestedDuration = 0;
+                if (monthlyBase > 0) {
+                    suggestedDuration = Math.ceil((gapToFillTotal - (isIntensive ? saeiPartWithVat : 0)) / monthlyBase);
+                    if (isIntensive && suggestedDuration < 5) {
+                        suggestedDuration = Math.ceil(gapToFillTotal / (monthlyBase + (saeiPartWithVat / 5)));
+                    }
+                }
+
                 if (contributionAtCurrentRate < gap - 0.5) {
                     suggestBox.style.display = 'block';
                     optimizedBox.style.display = 'none';
@@ -762,6 +774,7 @@
                         durationOptionLi.style.setProperty('display', 'none', 'important');
                     } else {
                         durationOptionLi.style.setProperty('display', 'list-item', 'important');
+                        durationOptionLi.innerHTML = `- زيادة مدة الادخار المستهدفة لتصبح <span class="en-font text-red-700">${suggestedDuration}</span> شهر.`;
                     }
 
                     document.getElementById('suggestedRateValue').innerText = precisionFormatter.format(neededRate);
