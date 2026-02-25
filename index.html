@@ -201,7 +201,7 @@
             .print-header-content { display: flex !important; flex-direction: row-reverse !important; justify-content: space-between !important; align-items: center !important; padding-bottom: 3mm !important; border-bottom: 3px solid #BCA37F !important; margin-bottom: 3mm !important; width: 100% !important; }
             #mainChartContainer { height: 350px !important; border: 1px solid #BCA37F !important; margin: 5mm 0 !important; }
             .print-break-before { break-before: page !important; page-break-before: always !important; }
-            table { width: 100% !important; border-collapse: collapse !important; font-size: 10px !important; }
+            table { width: 100% !important; border-collapse: collapse !important; font-size: 9px !important; }
             .gold-card { background-color: #BCA37F !important; padding: 1rem !important; border: 1px solid #111 !important; color: black !important; }
             #tableFooter td { background-color: #BCA37F !important; color: black !important; font-weight: 900 !important; border: 1px solid #111 !important; }
             .suggested-rate-box[style*="display: block"] { display: block !important; border: 2px solid #BCA37F !important; background-color: #FFF9E6 !important; page-break-inside: avoid !important; }
@@ -341,7 +341,14 @@
 
                                     <div class="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label id="durationLabel" class="input-label font-black text-blue-800">مدة الإدخار المختارة</label>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <label id="durationLabel" class="input-label font-black text-blue-800">مدة الإدخار المختارة</label>
+                                                <div class="flex items-center gap-1 no-print">
+                                                    <span class="text-[9px] text-gray-400 font-bold">تحكم يدوي</span>
+                                                    <input type="checkbox" id="manualDurationToggle" class="w-3 h-3 accent-blue-800 cursor-pointer" onchange="toggleManualDuration()">
+                                                </div>
+                                            </div>
+                                            <!-- Dropdown -->
                                             <select id="targetDurationDropdown" class="input-gold text-lg font-bold" onchange="runCalculation()">
                                                 <script>
                                                     for (let i = 1; i <= 18; i++) { 
@@ -349,11 +356,14 @@
                                                     }
                                                 </script>
                                             </select>
+                                            <!-- Manual Input -->
+                                            <input type="number" id="manualDurationInput" style="display:none;" class="input-gold text-lg font-black en-font" placeholder="18" oninput="runCalculation()">
                                         </div>
                                         <div>
                                             <div class="flex items-center justify-between mb-1">
                                                 <label class="text-[10px] font-black text-matte-gold">نسبة الاستقطاع %</label>
                                                 <div class="flex items-center gap-1 no-print">
+                                                    <span class="text-[9px] text-gray-400 font-bold">تحكم يدوي</span>
                                                     <input type="checkbox" id="manualRateToggle" class="w-3 h-3 accent-matte-gold cursor-pointer" onchange="toggleManualRate()">
                                                 </div>
                                             </div>
@@ -361,7 +371,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Shortfall Treatment Alert Box -->
+                                    <!-- Treatment Notification Box -->
                                     <div id="suggestedRateBox" class="suggested-rate-box">
                                         <div class="text-orange-900 mb-2 border-b border-matte-gold/10 pb-2 font-black">
                                             ⚠️ الوضع الراهن: هنالك عجز بزيادة قيمة <span id="shortfallAmountValue" class="en-font">0</span> في القسط الأخير.
@@ -374,11 +384,11 @@
                                         </ul>
                                     </div>
 
-                                    <!-- NEW: Early Success Optimization Box -->
+                                    <!-- Early Success Optimization Box -->
                                     <div id="optimizedRateBox" class="suggested-rate-box" style="background-color: var(--success-green); border-color: rgba(30, 126, 52, 0.2);">
                                         <div class="text-success-text font-black mb-1">💡 الإنجاز المبكر:</div>
                                         <div class="text-[10px] text-gray-800 font-bold leading-relaxed">
-                                            الخطة الحالية تحقق الهدف مبكراً! نسبة الاستقطاع المقترحة هي <span id="optimizedRateValue" class="en-font text-success-text">0.00</span>% للوصول للهدف بدقة في مدة <span id="optimizedDurationTarget" class="en-font">0</span> شهر.
+                                            الخطة الحالية تحقق الهدف مبكراً! في مدة <span id="earlyActualDuration" class="en-font text-success-text">0</span> شهر، نسبة الاستقطاع المقترحة هي <span id="optimizedRateValue" class="en-font text-success-text">0.00</span>% للوصول للهدف بدقة في مدة <span id="optimizedDurationTarget" class="en-font">0</span> شهر.
                                         </div>
                                     </div>
 
@@ -435,7 +445,7 @@
 
                         <section class="lg:col-span-8 space-y-6">
                             
-                            <!-- Summary -->
+                            <!-- Summary Cards -->
                             <div class="card-luxury bg-[#F9F4ED] border-2 border-matte-gold/20 animate-up">
                                 <h2 class="card-header-main text-lg md:text-2xl mb-6 uppercase tracking-widest text-center">خطة التملك والتحصيل</h2>
                                 <div class="grid grid-cols-4 gap-3 md:gap-4">
@@ -445,7 +455,7 @@
                                         <p class="card-subtitle mt-1">يومياً من POS</p>
                                     </div>
                                     <div class="gold-card shadow-lg">
-                                        <p class="card-title">قسط العقار</p>
+                                        <p class="card-title">أقساط العقار</p>
                                         <div class="number-box py-1 mt-1"><h3 id="displayNetPropSaving" class="text-sm md:text-xl font-black en-font text-center">0</h3></div>
                                         <p class="card-subtitle mt-1">المحقق بالاستقطاع</p>
                                     </div>
@@ -505,9 +515,10 @@
                                         <thead>
                                             <tr class="bg-gray-50/50 text-[10px] font-black text-black uppercase border-b border-light-gold/10">
                                                 <th class="px-4 py-3 text-center">الشهر</th>
-                                                <th class="px-4 py-3 text-center">استقطاع POS</th>
+                                                <th class="px-4 py-3 text-center">الاستقطاع اليومي POS</th>
+                                                <th class="px-4 py-3 text-center">الاستقطاع الشهري POS</th>
                                                 <th class="px-4 py-3 text-center text-orange-800">قسط الوساطة</th>
-                                                <th class="px-4 py-3 text-center text-blue-800">قسط العقار</th>
+                                                <th class="px-4 py-3 text-center text-blue-800">أقساط العقار</th>
                                                 <th class="px-4 py-3 text-center">التغطية</th>
                                             </tr>
                                         </thead>
@@ -532,8 +543,9 @@
         document.getElementById('exportBtn').addEventListener('click', () => window.print());
 
         function toEnglishDigits(str) {
+            if (!str) return "";
             const arabicNumerals = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
-            let cleanStr = str;
+            let cleanStr = str.toString();
             for (let i = 0; i < 10; i++) { cleanStr = cleanStr.replace(arabicNumerals[i], i); }
             return cleanStr;
         }
@@ -556,6 +568,8 @@
             const durationBtn = document.getElementById('modeDurationBtn');
             const propValInput = document.getElementById('propertyValue');
             const durationDropdown = document.getElementById('targetDurationDropdown');
+            const manualDurationInput = document.getElementById('manualDurationInput');
+            const manualDurationToggle = document.getElementById('manualDurationToggle');
             const durationLabel = document.getElementById('durationLabel');
             const propValLabel = document.getElementById('propertyValueLabel');
             const descEl = document.getElementById('modeDescription');
@@ -567,13 +581,17 @@
             document.getElementById('netProfit').value = "";
             document.getElementById('initialPayment').value = "";
             propValInput.value = "";
+            
             durationDropdown.value = "1";
+            manualDurationInput.value = "";
+            manualDurationToggle.checked = false;
+            toggleManualDuration();
             
             document.getElementById('deductionRate').value = "10";
             document.getElementById('manualRateToggle').checked = false;
             toggleManualRate(); 
 
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
             document.getElementById('tableFooter').innerHTML = '';
             document.querySelectorAll('#displayTotalDeduction, #displayNetPropSaving, #displayBrokerTotalPaid, #displayMonthsCount, #displayInitialCashFooter, #totalUpfrontSaeiFooter, #totalDeductionFooter').forEach(el => el.innerText = "0");
             
@@ -625,6 +643,44 @@
             runCalculation();
         }
 
+        function toggleManualDuration() {
+            const isManual = document.getElementById('manualDurationToggle').checked;
+            const dropdown = document.getElementById('targetDurationDropdown');
+            const input = document.getElementById('manualDurationInput');
+            const mainSales = getRawValue('mainAmount');
+            const propVal = getRawValue('propertyValue');
+            const deductionRate = parseFloat(document.getElementById('deductionRate').value) || 0;
+            const initialCash = getRawValue('initialPayment');
+
+            if (isManual) {
+                dropdown.style.display = 'none';
+                input.style.display = 'block';
+
+                if (mainSales > 0 && propVal > 0) {
+                    const monthlyBase = mainSales * 30 * (deductionRate / 100);
+                    const isIntensive = document.getElementById('intensiveMode').checked;
+                    const saeiPartWithVat = (propVal * 0.025) * 1.15;
+                    const totalSaeiFullWithVat = (propVal * 0.05 * 1.15);
+                    const upfrontNeeded = initialCash + saeiPartWithVat;
+                    const gapToFill = (propVal + totalSaeiFullWithVat) - upfrontNeeded;
+                    
+                    if (monthlyBase > 0) {
+                        let monthsNeeded = Math.ceil((gapToFill - (isIntensive ? saeiPartWithVat : 0)) / monthlyBase);
+                        if (isIntensive && monthsNeeded < 5) {
+                           monthsNeeded = Math.ceil(gapToFill / (monthlyBase + (saeiPartWithVat / 5)));
+                        }
+                        input.value = Math.max(1, monthsNeeded);
+                    }
+                } else if (!input.value) {
+                    input.value = dropdown.value;
+                }
+            } else {
+                dropdown.style.display = 'block';
+                input.style.display = 'none';
+            }
+            runCalculation();
+        }
+
         function updateAutomatedRate() {
             if (document.getElementById('manualRateToggle').checked) return parseFloat(document.getElementById('deductionRate').value) || 0;
             const hintEl = document.getElementById('rateHint');
@@ -632,6 +688,14 @@
             hintEl.innerText = "السياسة المعتمدة: استقطاع 10%";
             document.getElementById('deductionRate').value = rate;
             return rate;
+        }
+
+        function getTargetDuration() {
+            const isManual = document.getElementById('manualDurationToggle').checked;
+            if (isManual) {
+                return parseInt(document.getElementById('manualDurationInput').value) || 0;
+            }
+            return parseInt(document.getElementById('targetDurationDropdown').value) || 0;
         }
 
         function runCalculation() {
@@ -652,7 +716,7 @@
             
             const monthlyBase = mainSales * 30 * (deductionRate / 100);
             const isIntensive = document.getElementById('intensiveMode').checked;
-            const targetDuration = parseInt(document.getElementById('targetDurationDropdown').value) || 0;
+            const targetDuration = getTargetDuration();
             const k_intensive = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
             const denominator = 1.02875 - (0.02875 * k_intensive);
 
@@ -680,13 +744,12 @@
 
                 const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
 
-                // Case 1: Shortfall
-                if (contributionAtCurrentRate < gap - 1) {
+                if (contributionAtCurrentRate < gap - 0.5) {
                     suggestBox.style.display = 'block';
                     optimizedBox.style.display = 'none';
                     earlyAlert.style.display = 'none';
                     
-                    if (targetDuration >= 18) {
+                    if (targetDuration >= 18 && !document.getElementById('manualDurationToggle').checked) {
                         durationOptionLi.style.setProperty('display', 'none', 'important');
                     } else {
                         durationOptionLi.style.setProperty('display', 'list-item', 'important');
@@ -698,17 +761,15 @@
                     document.getElementById('shortfallAmountValue').innerText = shortfallText;
                     document.getElementById('shortfallAmountValueSuggest').innerText = shortfallText;
                 } 
-                // Case 2: Early Success (Need to check if it finishes before targetDuration)
                 else {
                     suggestBox.style.display = 'none';
-                    // We don't toggle optimizedBox here yet, we wait for calculateLedger to find actual months
                 }
                 
                 const actualMonthsUsed = calculateLedger(propertyVal, targetDuration, initialCash);
                 
-                // Case 2 continued: Only show optimized if actual < target
                 if (currentCalcMode === 'duration' && actualMonthsUsed < targetDuration) {
                     optimizedBox.style.display = 'block';
+                    document.getElementById('earlyActualDuration').innerText = actualMonthsUsed;
                     document.getElementById('optimizedRateValue').innerText = precisionFormatter.format(Math.max(0, neededRate));
                     document.getElementById('optimizedDurationTarget').innerText = targetDuration;
                 } else {
@@ -727,7 +788,7 @@
             document.querySelectorAll('#displayTotalDeduction').forEach(el => el.innerText = formatter.format(Math.round(sales * (baseRate / 100))));
 
             if (propertyVal <= 0) {
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
                 document.getElementById('tableFooter').innerHTML = ''; 
                 document.querySelectorAll('#displayNetPropSaving, #displayBrokerTotalPaid, #displayMonthsCount, #displayInitialCashFooter, #totalUpfrontSaeiFooter, #totalDeductionFooter').forEach(el => el.innerText = "0");
                 return 0;
@@ -735,7 +796,8 @@
 
             const saeiPartWithVat = (propertyVal * 0.025) * 1.15;
             const totalSaeiFullWithVat = (propertyVal * 0.05 * 1.15);
-            const gapToFill = (propertyVal + totalSaeiFullWithVat) - (initialCash + saeiPartWithVat);
+            const upfrontNeeded = initialCash + saeiPartWithVat;
+            const gapToFill = (propertyVal + totalSaeiFullWithVat) - upfrontNeeded;
 
             document.querySelectorAll('#displayBrokerTotalPaid').forEach(el => el.innerText = formatter.format(Math.round(saeiPartWithVat)));
             document.getElementById('brokerTotal').innerText = formatter.format(Math.round(totalSaeiFullWithVat));
@@ -754,7 +816,7 @@
                 let curPOS = isIntensive ? (curNet + curSaei) : curNet;
                 if (!isIntensive && m <= 5) curNet = Math.max(0, monthlyBase - curSaei);
                 
-                if (accDed + curPOS >= gapToFill - 1 || m === targetDuration) {
+                if (accDed + curPOS >= gapToFill - 0.5 || m === targetDuration) {
                     curPOS = Math.max(0, gapToFill - accDed);
                     if (m <= 5 && curSaei > 0) {
                         let ratio = curPOS / ((isIntensive ? (monthlyBase + curSaei) : monthlyBase) || 1);
@@ -767,10 +829,19 @@
                 labels.push(m + ' M'); data.push(Math.round(accDed));
                 const displayPerc = (gapToFill > 0) ? Math.min(100, (accDed / gapToFill * 100)).toFixed(1) : "100.0";
                 
-                html += `<tr class="text-center"><td class="py-4 font-black text-matte-gold">${m}</td><td class="py-4 en-font">${formatter.format(Math.round(curPOS))}</td><td class="py-4 text-orange-800 en-font">${curSaei > 1 ? formatter.format(Math.round(curSaei)) : '-'}</td><td class="py-4 text-blue-800 en-font">${formatter.format(Math.round(curNet))}</td><td class="py-4"><span class="px-2 py-0.5 bg-gray-100 rounded-full text-[10px] font-black en-font">${displayPerc}%</span></td></tr>`;
+                const curDailyDeduction = curPOS / 30;
+
+                html += `<tr class="text-center">
+                    <td class="py-4 font-black text-matte-gold">${m}</td>
+                    <td class="py-4 en-font">${formatter.format(Math.round(curDailyDeduction))}</td>
+                    <td class="py-4 en-font">${formatter.format(Math.round(curPOS))}</td>
+                    <td class="py-4 text-orange-800 en-font">${curSaei > 0.5 ? formatter.format(Math.round(curSaei)) : '-'}</td>
+                    <td class="py-4 text-blue-800 en-font">${formatter.format(Math.round(curNet))}</td>
+                    <td class="py-4"><span class="px-2 py-0.5 bg-gray-100 rounded-full text-[10px] font-black en-font">${displayPerc}%</span></td>
+                </tr>`;
                 
                 actualMonthsUsed = m;
-                if (accDed >= gapToFill - 1) break;
+                if (accDed >= gapToFill - 0.5) break;
             }
 
             if (currentCalcMode === 'duration' && actualMonthsUsed < targetDuration) {
@@ -780,7 +851,14 @@
             }
 
             document.getElementById('tableBody').innerHTML = html;
-            document.getElementById('tableFooter').innerHTML = `<tr style="background-color: #BCA37F !important; color: #000 !important; font-weight: 900 !important; text-align: center !important;"><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">الإجمالي</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${formatter.format(Math.round(totalPOSSum))}</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #4A3728 !important;" class="en-font">${formatter.format(Math.round(totalSaeiSum))}</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #1e3a8a !important;" class="en-font">${formatter.format(Math.round(totalNetSum))}</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${(gapToFill > 0 ? Math.min(100, (totalPOSSum/gapToFill*100)) : 100).toFixed(1)}%</td></tr>`;
+            document.getElementById('tableFooter').innerHTML = `<tr style="background-color: #BCA37F !important; color: #000 !important; font-weight: 900 !important; text-align: center !important;">
+                <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">الإجمالي</td>
+                <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">-</td>
+                <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${formatter.format(Math.round(totalPOSSum))}</td>
+                <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #4A3728 !important;" class="en-font">${formatter.format(Math.round(totalSaeiSum))}</td>
+                <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #1e3a8a !important;" class="en-font">${formatter.format(Math.round(totalNetSum))}</td>
+                <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${(gapToFill > 0 ? Math.min(100, (totalPOSSum/gapToFill*100)) : 100).toFixed(1)}%</td>
+            </tr>`;
             
             document.querySelectorAll('#displayNetPropSaving').forEach(el => el.innerText = formatter.format(Math.round(totalNetSum)));
             document.querySelectorAll('#displayMonthsCount').forEach(el => el.innerText = actualMonthsUsed);
