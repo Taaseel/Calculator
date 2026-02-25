@@ -192,7 +192,7 @@
             
             body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; width: 100% !important; }
             
-            main { display: grid !important; grid-template-columns: repeat(12, 1fr) !important; gap: 5mm !important; width: 100% !important; padding: 0 !important; }
+            main { display: grid !important; grid-template-columns: repeat(12, 1fr) !important; gap: 8mm !important; width: 100% !important; padding: 0 !important; }
             
             aside { grid-column: span 4 !important; order: 1 !important; }
             section { grid-column: span 8 !important; order: 2 !important; }
@@ -218,10 +218,15 @@
             
             table { width: 100% !important; border-collapse: collapse !important; border: 1px solid #ddd !important; }
             
+            /* Crucial: Prevent repetition of total row if placed in tfoot, 
+               but we moved it to tbody to be safe. We also style the last row. */
+            .total-row-highlight {
+                background-color: #BCA37F !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
             .gold-card { background-color: #BCA37F !important; padding: 1.5rem !important; border: 1px solid #111 !important; color: black !important; }
             
-            #tableFooter td { background-color: #BCA37F !important; color: black !important; font-weight: 900 !important; border: 1px solid #111 !important; }
-
             .suggested-rate-box[style*="display: block"] { 
                 display: block !important; 
                 border: 2px solid #BCA37F !important;
@@ -552,7 +557,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tableBody" class="text-xs font-bold text-black divide-y divide-light-gold/10"></tbody>
-                                        <tfoot id="tableFooter"></tfoot>
+                                        <!-- Footer replaced by the total row in tbody to prevent repetition in print -->
                                     </table>
                                 </div>
                             </div>
@@ -581,12 +586,7 @@
 
         function formatInput(el) {
             let val = toEnglishDigits(el.value).replace(/[^0-9]/g, '');
-            
-            // Limit net profit to 100
-            if (el.id === 'netProfit' && val !== "") {
-                if (parseInt(val) > 100) val = "100";
-            }
-
+            if (el.id === 'netProfit' && val !== "") { if (parseInt(val) > 100) val = "100"; }
             if (val !== "") { el.value = Number(val).toLocaleString('en-US'); } else { el.value = ""; }
             runCalculation();
         }
@@ -616,20 +616,16 @@
             document.getElementById('netProfit').value = "";
             document.getElementById('initialPayment').value = "";
             propValInput.value = "";
-            
             durationDropdown.value = "1";
             manualDurationInput.value = "";
             manualDurationToggle.checked = false;
             toggleManualDuration();
-            
             document.getElementById('deductionRate').value = "10";
             document.getElementById('manualRateToggle').checked = false;
             toggleManualRate(); 
 
             document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
-            document.getElementById('tableFooter').innerHTML = '';
             document.querySelectorAll('#displayTotalDeduction, #displayNetPropSaving, #displayBrokerTotalPaid, #displayMonthsCount, #displayInitialCashFooter, #totalUpfrontSaeiFooter, #totalDeductionFooter').forEach(el => el.innerText = "0");
-            
             document.getElementById('brokerTotal').innerText = "0";
             document.getElementById('brokerMonthly').innerText = "0";
             document.getElementById('brokerAtSigning').innerText = "0";
@@ -655,7 +651,6 @@
                 durationDropdown.disabled = false; 
                 durationDropdown.classList.remove('output-highlight');
                 durationLabel.innerText = "مدة الإدخار المستهدفة";
-                propValLabel.innerText = "قيمة العقار المستهدفة";
                 descEl.innerHTML = `حدد <span class="text-matte-gold font-black">(سعر العقار)</span> و <span class="text-blue-800 font-black">(المدة)</span> لنحدد لك إمكانية التملك`;
             }
             if(chart) { chart.destroy(); chart = null; }
@@ -693,25 +688,18 @@
             if (isManual) {
                 dropdown.style.display = 'none';
                 input.style.display = 'block';
-
                 if (mainSales > 0 && propVal > 0) {
                     const monthlyBase = mainSales * 30 * (deductionRate / 100);
                     const isIntensive = document.getElementById('intensiveMode').checked;
                     const saeiPartWithVat = (propVal * 0.025) * 1.15;
                     const totalSaeiFullWithVat = (propVal * 0.05 * 1.15);
-                    const upfrontNeeded = initialCash + saeiPartWithVat;
-                    const gapToFill = (propVal + totalSaeiFullWithVat) - upfrontNeeded;
-                    
+                    const gapToFill = (propVal + totalSaeiFullWithVat) - (initialCash + saeiPartWithVat);
                     if (monthlyBase > 0) {
                         let monthsNeeded = Math.ceil((gapToFill - (isIntensive ? saeiPartWithVat : 0)) / monthlyBase);
-                        if (isIntensive && monthsNeeded < 5) {
-                           monthsNeeded = Math.ceil(gapToFill / (monthlyBase + (saeiPartWithVat / 5)));
-                        }
+                        if (isIntensive && monthsNeeded < 5) monthsNeeded = Math.ceil(gapToFill / (monthlyBase + (saeiPartWithVat / 5)));
                         input.value = Math.max(1, monthsNeeded);
                     }
-                } else if (!input.value) {
-                    input.value = dropdown.value;
-                }
+                } else if (!input.value) { input.value = dropdown.value; }
             } else {
                 dropdown.style.display = 'block';
                 input.style.display = 'none';
@@ -730,10 +718,7 @@
 
         function getTargetDuration() {
             const isManual = document.getElementById('manualDurationToggle').checked;
-            if (isManual) {
-                return parseInt(document.getElementById('manualDurationInput').value) || 0;
-            }
-            return parseInt(document.getElementById('targetDurationDropdown').value) || 0;
+            return isManual ? (parseInt(document.getElementById('manualDurationInput').value) || 0) : (parseInt(document.getElementById('targetDurationDropdown').value) || 0);
         }
 
         function runCalculation() {
@@ -745,12 +730,7 @@
             const earlyAlert = document.getElementById('earlySuccessAlert');
             const durationOptionLi = document.getElementById('increaseDurationBullet');
 
-            if (mainSales <= 0) { 
-                suggestBox.style.display = 'none'; 
-                optimizedBox.style.display = 'none';
-                earlyAlert.style.display = 'none'; 
-                return; 
-            }
+            if (mainSales <= 0) { suggestBox.style.display = 'none'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none'; return; }
             
             const monthlyBase = mainSales * 30 * (deductionRate / 100);
             const isIntensive = document.getElementById('intensiveMode').checked;
@@ -762,70 +742,46 @@
                 const affordablePropValue = (monthlyBase * targetDuration + initialCash) / denominator;
                 document.getElementById('propertyValue').value = formatter.format(Math.round(affordablePropValue));
                 calculateLedger(affordablePropValue, targetDuration, initialCash);
-                suggestBox.style.display = 'none';
-                optimizedBox.style.display = 'none';
-                earlyAlert.style.display = 'none';
+                suggestBox.style.display = 'none'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none';
             } else {
                 const propertyVal = getRawValue('propertyValue');
-                if (propertyVal <= 0) { 
-                    calculateLedger(0, targetDuration, initialCash); 
-                    suggestBox.style.display = 'none'; 
-                    optimizedBox.style.display = 'none';
-                    earlyAlert.style.display = 'none'; 
-                    return; 
-                }
-                
+                if (propertyVal <= 0) { calculateLedger(0, targetDuration, initialCash); suggestBox.style.display = 'none'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none'; return; }
                 const gap = (propertyVal * 1.02875) - initialCash;
                 const intensiveK = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
                 const saeiPartWithVat = (propertyVal * 0.025) * 1.15;
-                const contributionAtCurrentRate = (monthlyBase * targetDuration) + (intensiveK * saeiPartWithVat);
-
-                const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
-
-                // Calculate suggested duration to cover shortfall
                 const totalSaeiFullWithVat = (propertyVal * 0.05 * 1.15);
+                const contributionAtCurrentRate = (monthlyBase * targetDuration) + (intensiveK * saeiPartWithVat);
+                const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
                 const upfrontNeeded = initialCash + saeiPartWithVat;
                 const gapToFillTotal = (propertyVal + totalSaeiFullWithVat) - upfrontNeeded;
+
                 let suggestedDuration = 0;
                 if (monthlyBase > 0) {
                     suggestedDuration = Math.ceil((gapToFillTotal - (isIntensive ? saeiPartWithVat : 0)) / monthlyBase);
-                    if (isIntensive && suggestedDuration < 5) {
-                        suggestedDuration = Math.ceil(gapToFillTotal / (monthlyBase + (saeiPartWithVat / 5)));
-                    }
+                    if (isIntensive && suggestedDuration < 5) suggestedDuration = Math.ceil(gapToFillTotal / (monthlyBase + (saeiPartWithVat / 5)));
                 }
 
                 if (contributionAtCurrentRate < gap - 0.5) {
-                    suggestBox.style.display = 'block';
-                    optimizedBox.style.display = 'none';
-                    earlyAlert.style.display = 'none';
-                    
+                    suggestBox.style.display = 'block'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none';
                     if (targetDuration >= 18 && !document.getElementById('manualDurationToggle').checked) {
                         durationOptionLi.style.setProperty('display', 'none', 'important');
                     } else {
                         durationOptionLi.style.setProperty('display', 'list-item', 'important');
                         durationOptionLi.innerHTML = `- زيادة مدة الادخار المستهدفة لتصبح <span class="en-font text-red-700">${suggestedDuration}</span> شهر.`;
                     }
-
                     document.getElementById('suggestedRateValue').innerText = precisionFormatter.format(neededRate);
                     const shortfallAmount = Math.max(0, gap - contributionAtCurrentRate);
-                    const shortfallText = formatter.format(Math.round(shortfallAmount));
-                    document.getElementById('shortfallAmountValue').innerText = shortfallText;
-                    document.getElementById('shortfallAmountValueSuggest').innerText = shortfallText;
-                } 
-                else {
-                    suggestBox.style.display = 'none';
-                }
+                    document.getElementById('shortfallAmountValue').innerText = formatter.format(Math.round(shortfallAmount));
+                    document.getElementById('shortfallAmountValueSuggest').innerText = formatter.format(Math.round(shortfallAmount));
+                } else { suggestBox.style.display = 'none'; }
                 
                 const actualMonthsUsed = calculateLedger(propertyVal, targetDuration, initialCash);
-                
                 if (currentCalcMode === 'duration' && actualMonthsUsed < targetDuration) {
                     optimizedBox.style.display = 'block';
                     document.getElementById('earlyActualDuration').innerText = actualMonthsUsed;
                     document.getElementById('optimizedRateValue').innerText = precisionFormatter.format(Math.max(0, neededRate));
                     document.getElementById('optimizedDurationTarget').innerText = targetDuration;
-                } else {
-                    optimizedBox.style.display = 'none';
-                }
+                } else { optimizedBox.style.display = 'none'; }
             }
         }
 
@@ -840,13 +796,10 @@
 
             if (propertyVal <= 0) {
                 document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
-                document.getElementById('tableFooter').innerHTML = ''; 
                 document.querySelectorAll('#displayNetPropSaving, #displayBrokerTotalPaid, #displayMonthsCount, #displayInitialCashFooter, #totalUpfrontSaeiFooter, #totalDeductionFooter').forEach(el => el.innerText = "0");
-                
                 document.getElementById('brokerTotal').innerText = "0";
                 document.getElementById('brokerMonthly').innerText = "0";
                 document.getElementById('brokerAtSigning').innerText = "0";
-
                 return 0;
             }
 
@@ -859,7 +812,6 @@
             document.getElementById('brokerTotal').innerText = formatter.format(Math.round(totalSaeiFullWithVat));
             document.getElementById('brokerMonthly').innerText = formatter.format(Math.round(saeiPartWithVat / 5));
             document.getElementById('brokerAtSigning').innerText = formatter.format(Math.round(saeiPartWithVat));
-            
             document.getElementById('displayInitialCashFooter').innerText = formatter.format(Math.round(initialCash));
             document.getElementById('totalUpfrontSaeiFooter').innerText = formatter.format(Math.round(saeiPartWithVat));
 
@@ -871,7 +823,6 @@
                 let curNet = monthlyBase;
                 let curPOS = isIntensive ? (curNet + curSaei) : curNet;
                 if (!isIntensive && m <= 5) curNet = Math.max(0, monthlyBase - curSaei);
-                
                 if (accDed + curPOS >= gapToFill - 0.5 || m === targetDuration) {
                     curPOS = Math.max(0, gapToFill - accDed);
                     if (m <= 5 && curSaei > 0) {
@@ -880,34 +831,23 @@
                         curSaei = isIntensive ? (curSaei * ratio) : 0;
                     } else { curNet = curPOS; curSaei = 0; }
                 }
-
                 accDed += curPOS; totalPOSSum += curPOS; totalSaeiSum += curSaei; totalNetSum += curNet;
                 labels.push(m + ' M'); data.push(Math.round(accDed));
                 const displayPerc = (gapToFill > 0) ? Math.min(100, (accDed / gapToFill * 100)).toFixed(1) : "100.0";
-                
-                const curDailyDeduction = curPOS / 30;
-
                 html += `<tr class="text-center">
                     <td class="py-4 font-black text-matte-gold">${m}</td>
-                    <td class="py-4 en-font">${formatter.format(Math.round(curDailyDeduction))}</td>
+                    <td class="py-4 en-font">${formatter.format(Math.round(curPOS / 30))}</td>
                     <td class="py-4 en-font">${formatter.format(Math.round(curPOS))}</td>
                     <td class="py-4 text-orange-800 en-font">${curSaei > 0.5 ? formatter.format(Math.round(curSaei)) : '-'}</td>
                     <td class="py-4 text-blue-800 en-font">${formatter.format(Math.round(curNet))}</td>
                     <td class="py-4"><span class="px-2 py-0.5 bg-gray-100 rounded-full text-[10px] font-black en-font">${displayPerc}%</span></td>
                 </tr>`;
-                
                 actualMonthsUsed = m;
                 if (accDed >= gapToFill - 0.5) break;
             }
 
-            if (currentCalcMode === 'duration' && actualMonthsUsed < targetDuration) {
-                earlyAlert.style.display = 'block';
-            } else {
-                earlyAlert.style.display = 'none';
-            }
-
-            document.getElementById('tableBody').innerHTML = html;
-            document.getElementById('tableFooter').innerHTML = `<tr style="background-color: #BCA37F !important; color: #000 !important; font-weight: 900 !important; text-align: center !important;">
+            // Move TOTAL to the end of tbody to prevent repeat in print
+            const totalRowHtml = `<tr class="total-row-highlight" style="background-color: #BCA37F !important; color: #000 !important; font-weight: 900 !important; text-align: center !important;">
                 <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">الإجمالي</td>
                 <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">-</td>
                 <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${formatter.format(Math.round(totalPOSSum))}</td>
@@ -915,12 +855,13 @@
                 <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #1e3a8a !important;" class="en-font">${formatter.format(Math.round(totalNetSum))}</td>
                 <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${(gapToFill > 0 ? Math.min(100, (totalPOSSum/gapToFill*100)) : 100).toFixed(1)}%</td>
             </tr>`;
-            
+
+            document.getElementById('tableBody').innerHTML = html + totalRowHtml;
+            if (currentCalcMode === 'duration' && actualMonthsUsed < targetDuration) earlyAlert.style.display = 'block'; else earlyAlert.style.display = 'none';
             document.querySelectorAll('#displayNetPropSaving').forEach(el => el.innerText = formatter.format(Math.round(totalNetSum)));
             document.querySelectorAll('#displayMonthsCount').forEach(el => el.innerText = actualMonthsUsed);
             document.querySelectorAll('#totalDeductionFooter').forEach(el => el.innerText = formatter.format(Math.round(totalPOSSum)));
             updateChart(labels, data, gapToFill);
-            
             return actualMonthsUsed;
         }
 
@@ -943,17 +884,14 @@
                 }
             };
             chart = new Chart(ctx, {
-                type: 'line',
-                plugins: [targetLabelPlugin],
+                type: 'line', plugins: [targetLabelPlugin],
                 data: {
                     labels: labels,
                     datasets: [{ label: 'تراكمي', data: data, borderColor: '#BCA37F', backgroundColor: 'rgba(188, 163, 127, 0.1)', fill: true, tension: 0.4, borderWidth: 5, pointRadius: 3, pointBackgroundColor: '#111', pointBorderColor: '#fff' },
                                { label: 'الهدف', data: labels.map(() => target), borderColor: '#111', borderDash: [6, 4], borderWidth: 2, pointRadius: 0 }]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { right: 85, top: 10 } },
-                    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#111' } },
+                    responsive: true, maintainAspectRatio: false, layout: { padding: { right: 85, top: 10 } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#111' } },
                     scales: {
                         y: { position: 'right', grid: { color: 'rgba(0,0,0,0.03)' }, ticks: { font: { family: 'Verdana', size: 9 }, callback: (v) => formatter.format(v) } },
                         x: { grid: { display: false }, ticks: { font: { family: 'Verdana', size: 9, weight: 'bold' } } }
