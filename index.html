@@ -170,7 +170,7 @@
 
         @media print {
             @page { size: A3 landscape; margin: 10mm; }
-            nav, .no-print, button, .mode-selector-container, #modeDescription, .suggested-rate-box { display: none !important; }
+            nav, .no-print, button, .mode-selector-container, #modeDescription { display: none !important; }
             body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; width: 100% !important; }
             main { display: grid !important; grid-template-columns: repeat(12, 1fr) !important; gap: 5mm !important; }
             aside { grid-column: span 4 !important; order: 1 !important; }
@@ -184,6 +184,14 @@
             tfoot { display: table-row-group !important; }
             .gold-card { background-color: #BCA37F !important; padding: 1.5rem !important; border: 1px solid #111 !important; }
             #tableFooter td { background-color: #BCA37F !important; color: black !important; font-weight: 900 !important; border: 1px solid #111 !important; }
+            
+            /* Ensure the suggested box is visible in print if triggered */
+            .suggested-rate-box { 
+                display: block !important; 
+                border: 2px solid #BCA37F !important;
+                background-color: #FFF9E6 !important;
+                page-break-inside: avoid !important;
+            }
         }
     </style>
 </head>
@@ -338,12 +346,13 @@
                                         </div>
                                     </div>
 
+                                    <!-- Shortfall Treatment Alert - Visible in Print -->
                                     <div id="suggestedRateBox" class="suggested-rate-box">
                                         <div class="text-orange-900 mb-2 border-b border-matte-gold/10 pb-2">
                                             ⚠️ <strong>الوضع الراهن:</strong> هنالك عجز بزيادة قيمة <span id="shortfallAmountValue" class="font-black">0</span> في القسط الأخير.
                                         </div>
                                         <div class="font-black text-dark-brown mb-1">أما المعالجة كالتالي:</div>
-                                        <ul class="text-[9.5px] space-y-1 pr-1 text-gray-700">
+                                        <ul class="text-[10px] space-y-1 pr-1 text-gray-800">
                                             <li>• نسبة الاستقطاع المقترحة هي <span id="suggestedRateValue" class="text-red-700 font-black">0.00</span>% للوصول للهدف.</li>
                                             <li>• زيادة مدة الادخار المستهدفة.</li>
                                             <li>• دفع مقدمة (نقداً) بقيمة <span id="shortfallAmountValueSuggest" class="font-black text-blue-900">0</span> لتغطية العجز في القسط الأخير.</li>
@@ -364,6 +373,7 @@
                                 </div>
                             </div>
 
+                            <!-- Card 4: Cost Analysis -->
                             <div class="card-luxury border-r-8 border-r-matte-gold">
                                 <h2 class="card-header-main">تحليل تكاليف التملك</h2>
                                 <div class="space-y-5">
@@ -528,6 +538,7 @@
             document.getElementById('initialPayment').value = "";
             propValInput.value = "";
             durationDropdown.value = "1";
+            
             document.getElementById('deductionRate').value = "7";
             document.getElementById('manualRateToggle').checked = false;
             toggleManualRate(); 
@@ -624,12 +635,17 @@
 
                 if (contributionAtCurrentRate < gap - 1) {
                     suggestBox.style.display = 'block';
+                    // Calculate suggested rate
                     const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
                     document.getElementById('suggestedRateValue').innerText = precisionFormatter.format(neededRate);
+                    
                     const shortfallAmount = gap - contributionAtCurrentRate;
-                    document.getElementById('shortfallAmountValue').innerText = formatter.format(Math.round(shortfallAmount));
-                    document.getElementById('shortfallAmountValueSuggest').innerText = formatter.format(Math.round(shortfallAmount));
-                } else { suggestBox.style.display = 'none'; }
+                    const shortfallText = formatter.format(Math.round(shortfallAmount));
+                    document.getElementById('shortfallAmountValue').innerText = shortfallText;
+                    document.getElementById('shortfallAmountValueSuggest').innerText = shortfallText;
+                } else { 
+                    suggestBox.style.display = 'none'; 
+                }
                 calculateLedger(propertyVal, targetDuration, initialCash);
             }
         }
@@ -689,6 +705,7 @@
             }
 
             document.getElementById('tableBody').innerHTML = html;
+            
             document.getElementById('tableFooter').innerHTML = `
                 <tr style="background-color: #BCA37F !important; color: #000 !important; font-weight: 900 !important; text-align: center !important;">
                     <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">الإجمالي</td>
