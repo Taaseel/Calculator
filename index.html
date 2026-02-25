@@ -29,7 +29,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Force English numbers globally for inputs and results */
         input, select, .en-font, h3, p, span, td, th {
             font-variant-numeric: tabular-nums;
             -webkit-font-feature-settings: "tnum";
@@ -144,9 +143,9 @@
         .suggested-rate-box {
             background-color: #FFF9E6;
             border: 1.5px dashed var(--matte-gold);
-            padding: 14px;
+            padding: 16px;
             border-radius: 1.25rem;
-            font-size: 11px;
+            font-size: 11.5px;
             margin-top: 15px;
             display: none;
             animation: fadeIn 0.4s ease;
@@ -185,12 +184,13 @@
             .gold-card { background-color: #BCA37F !important; padding: 1.5rem !important; border: 1px solid #111 !important; }
             #tableFooter td { background-color: #BCA37F !important; color: black !important; font-weight: 900 !important; border: 1px solid #111 !important; }
             
-            /* Ensure the suggested box is visible in print if triggered */
-            .suggested-rate-box { 
+            /* FORCE SHOW SUGGESTED BOX IN PRINT */
+            .suggested-rate-box[style*="display: block"] { 
                 display: block !important; 
                 border: 2px solid #BCA37F !important;
                 background-color: #FFF9E6 !important;
                 page-break-inside: avoid !important;
+                -webkit-print-color-adjust: exact;
             }
         }
     </style>
@@ -346,16 +346,16 @@
                                         </div>
                                     </div>
 
-                                    <!-- Shortfall Treatment Alert - Visible in Print -->
+                                    <!-- Shortfall Notification Box -->
                                     <div id="suggestedRateBox" class="suggested-rate-box">
-                                        <div class="text-orange-900 mb-2 border-b border-matte-gold/10 pb-2">
-                                            ⚠️ <strong>الوضع الراهن:</strong> هنالك عجز بزيادة قيمة <span id="shortfallAmountValue" class="font-black">0</span> في القسط الأخير.
+                                        <div class="text-orange-900 mb-2 border-b border-matte-gold/10 pb-2 font-black">
+                                            ⚠️ الوضع الراهن: هنالك عجز بزيادة قيمة <span id="shortfallAmountValue" class="en-font">0</span> في القسط الأخير.
                                         </div>
                                         <div class="font-black text-dark-brown mb-1">أما المعالجة كالتالي:</div>
-                                        <ul class="text-[10px] space-y-1 pr-1 text-gray-800">
-                                            <li>• نسبة الاستقطاع المقترحة هي <span id="suggestedRateValue" class="text-red-700 font-black">0.00</span>% للوصول للهدف.</li>
+                                        <ul class="text-[10px] space-y-1 pr-1 text-gray-800 font-bold">
+                                            <li>• نسبة الاستقطاع المقترحة هي <span id="suggestedRateValue" class="text-red-700 en-font">0.00</span>% للوصول للهدف.</li>
                                             <li>• زيادة مدة الادخار المستهدفة.</li>
-                                            <li>• دفع مقدمة (نقداً) بقيمة <span id="shortfallAmountValueSuggest" class="font-black text-blue-900">0</span> لتغطية العجز في القسط الأخير.</li>
+                                            <li>• دفع مقدمة (نقداً) بقيمة <span id="shortfallAmountValueSuggest" class="en-font text-blue-900">0</span> لتغطية العجز في القسط الأخير.</li>
                                         </ul>
                                     </div>
 
@@ -408,7 +408,7 @@
 
                         <section class="lg:col-span-8 space-y-6">
                             
-                            <!-- Summary Cards -->
+                            <!-- Summary -->
                             <div class="card-luxury bg-[#F9F4ED] border-2 border-matte-gold/20 animate-up">
                                 <h2 class="card-header-main text-lg md:text-2xl mb-6 uppercase tracking-widest text-center">خطة التملك والتحصيل</h2>
                                 <div class="grid grid-cols-4 gap-3 md:gap-4">
@@ -437,7 +437,7 @@
                                 </div>
                             </div>
 
-                            <!-- Chart Section -->
+                            <!-- Chart -->
                             <div class="card-luxury p-0 md:p-10 overflow-hidden">
                                 <div class="p-6 md:p-0 text-center mb-6">
                                     <h2 class="text-xl md:text-2xl font-black text-black">منحنى التدفقات النقدية التراكمي</h2>
@@ -461,6 +461,7 @@
                                 </div>
                             </div>
 
+                            <!-- Ledger -->
                             <div class="card-luxury overflow-hidden">
                                 <div class="px-6 py-4 border-b border-light-gold/20 bg-gray-50/50 text-center">
                                     <h3 class="font-black text-black text-lg">جدول الاستقطاع والتحصيل الشهري</h3>
@@ -499,20 +500,13 @@
         function toEnglishDigits(str) {
             const arabicNumerals = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
             let cleanStr = str;
-            for (let i = 0; i < 10; i++) {
-                cleanStr = cleanStr.replace(arabicNumerals[i], i);
-            }
+            for (let i = 0; i < 10; i++) { cleanStr = cleanStr.replace(arabicNumerals[i], i); }
             return cleanStr;
         }
 
         function formatInput(el) {
-            let val = toEnglishDigits(el.value);
-            val = val.replace(/[^0-9]/g, '');
-            if (val !== "") {
-                el.value = Number(val).toLocaleString('en-US');
-            } else {
-                el.value = "";
-            }
+            let val = toEnglishDigits(el.value).replace(/[^0-9]/g, '');
+            if (val !== "") { el.value = Number(val).toLocaleString('en-US'); } else { el.value = ""; }
             runCalculation();
         }
 
@@ -538,7 +532,6 @@
             document.getElementById('initialPayment').value = "";
             propValInput.value = "";
             durationDropdown.value = "1";
-            
             document.getElementById('deductionRate').value = "7";
             document.getElementById('manualRateToggle').checked = false;
             toggleManualRate(); 
@@ -546,6 +539,8 @@
             document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
             document.getElementById('tableFooter').innerHTML = '';
             document.querySelectorAll('#displayTotalDeduction, #displayNetPropSaving, #displayBrokerTotalPaid, #displayMonthsCount, #totalUpfrontNeeded, #totalDeductionFooter').forEach(el => el.innerText = "0");
+            
+            suggestBox.style.display = 'none';
 
             if (mode === 'value') {
                 valueBtn.classList.add('active');
@@ -557,7 +552,6 @@
                 durationLabel.innerText = "مدة الإدخار المختارة";
                 propValLabel.innerText = "قيمة العقار المتاحة للتملك";
                 descEl.innerHTML = `حدد <span class="text-blue-800 font-black">(المدة)</span> لتعرف <span class="text-matte-gold font-black">(سعر العقار)</span> المتاح لك بناءً على مبيعاتك`;
-                suggestBox.style.display = 'none';
             } else {
                 durationBtn.classList.add('active');
                 valueBtn.classList.remove('active');
@@ -569,6 +563,7 @@
                 propValLabel.innerText = "قيمة العقار المستهدفة";
                 descEl.innerHTML = `حدد <span class="text-matte-gold font-black">(سعر العقار)</span> و <span class="text-blue-800 font-black">(المدة)</span> لنحدد لك إمكانية التملك`;
             }
+            if(chart) { chart.destroy(); chart = null; }
         }
 
         function toggleManualRate() {
@@ -595,14 +590,8 @@
             if (document.getElementById('manualRateToggle').checked) return parseFloat(document.getElementById('deductionRate').value) || 0;
             const netProfit = getRawValue('netProfit');
             const hintEl = document.getElementById('rateHint');
-            let rate;
-            if (netProfit >= 20) {
-                rate = 10;
-                hintEl.innerText = "سياسة الربح 20%+: استقطاع 10%";
-            } else {
-                rate = 7;
-                hintEl.innerText = "سياسة الربح أقل من 20%: استقطاع 7%";
-            }
+            let rate = (netProfit >= 20) ? 10 : 7;
+            hintEl.innerText = (netProfit >= 20) ? "سياسة الربح 20%+: استقطاع 10%" : "سياسة الربح أقل من 20%: استقطاع 7%";
             document.getElementById('deductionRate').value = rate;
             return rate;
         }
@@ -611,12 +600,13 @@
             const deductionRate = updateAutomatedRate();
             const initialCash = getRawValue('initialPayment');
             const mainSales = getRawValue('mainAmount');
-            if (mainSales <= 0) return; 
+            const suggestBox = document.getElementById('suggestedRateBox');
+
+            if (mainSales <= 0) { suggestBox.style.display = 'none'; return; }
+            
             const monthlyBase = mainSales * 30 * (deductionRate / 100);
             const isIntensive = document.getElementById('intensiveMode').checked;
-            const suggestBox = document.getElementById('suggestedRateBox');
             const targetDuration = parseInt(document.getElementById('targetDurationDropdown').value) || 0;
-
             const k_intensive = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
             const denominator = 1.02875 - (0.02875 * k_intensive);
 
@@ -627,7 +617,8 @@
                 suggestBox.style.display = 'none';
             } else {
                 const propertyVal = getRawValue('propertyValue');
-                if (propertyVal <= 0) { calculateLedger(0, targetDuration, initialCash); return; }
+                if (propertyVal <= 0) { calculateLedger(0, targetDuration, initialCash); suggestBox.style.display = 'none'; return; }
+                
                 const gap = (propertyVal * 1.02875) - initialCash;
                 const intensiveK = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
                 const saeiPartWithVat = (propertyVal * 0.025) * 1.15;
@@ -635,17 +626,13 @@
 
                 if (contributionAtCurrentRate < gap - 1) {
                     suggestBox.style.display = 'block';
-                    // Calculate suggested rate
                     const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
                     document.getElementById('suggestedRateValue').innerText = precisionFormatter.format(neededRate);
-                    
-                    const shortfallAmount = gap - contributionAtCurrentRate;
+                    const shortfallAmount = Math.max(0, gap - contributionAtCurrentRate);
                     const shortfallText = formatter.format(Math.round(shortfallAmount));
                     document.getElementById('shortfallAmountValue').innerText = shortfallText;
                     document.getElementById('shortfallAmountValueSuggest').innerText = shortfallText;
-                } else { 
-                    suggestBox.style.display = 'none'; 
-                }
+                } else { suggestBox.style.display = 'none'; }
                 calculateLedger(propertyVal, targetDuration, initialCash);
             }
         }
@@ -660,7 +647,7 @@
             if (propertyVal <= 0) {
                 document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="py-16 text-gray-300 italic font-bold">بانتظار البيانات...</td></tr>';
                 document.getElementById('tableFooter').innerHTML = ''; 
-                document.querySelectorAll('#displayNetPropSaving, #displayMonthsCount, #totalDeductionFooter, #totalUpfrontNeeded').forEach(el => el.innerText = "0");
+                document.querySelectorAll('#displayNetPropSaving, #displayBrokerTotalPaid, #displayMonthsCount, #totalDeductionFooter, #totalUpfrontNeeded').forEach(el => el.innerText = "0");
                 return;
             }
 
@@ -675,45 +662,31 @@
             document.querySelectorAll('#totalUpfrontNeeded').forEach(el => el.innerText = formatter.format(Math.round(upfrontNeeded)));
 
             const monthlySaei = saeiPartWithVat / 5;
-            let accDed = 0, labels = [], data = [], html = '', totalPOSSum = 0, totalSaeiSum = 0, totalNetSum = 0;
+            let accDed = 0, totalPOSSum = 0, totalSaeiSum = 0, totalNetSum = 0, labels = [], data = [], html = '';
 
             for (let m = 1; m <= targetDuration; m++) {
                 let curSaei = (m <= 5) ? monthlySaei : 0;
                 let curNet = monthlyBase;
                 let curPOS = isIntensive ? (curNet + curSaei) : curNet;
                 if (!isIntensive && m <= 5) curNet = Math.max(0, monthlyBase - curSaei);
+                
                 if (accDed + curPOS >= gapToFill - 1 || m === targetDuration) {
                     curPOS = Math.max(0, gapToFill - accDed);
                     if (m <= 5 && curSaei > 0) {
-                        let potentialPortion = isIntensive ? (monthlyBase + curSaei) : monthlyBase;
-                        let ratio = curPOS / (potentialPortion || 1);
+                        let ratio = curPOS / ((isIntensive ? (monthlyBase + curSaei) : monthlyBase) || 1);
                         curNet = isIntensive ? (monthlyBase * ratio) : curPOS;
                         curSaei = isIntensive ? (curSaei * ratio) : 0;
                     } else { curNet = curPOS; curSaei = 0; }
                 }
+
                 accDed += curPOS; totalPOSSum += curPOS; totalSaeiSum += curSaei; totalNetSum += curNet;
                 labels.push(m + ' M'); data.push(Math.round(accDed));
                 const displayPerc = (gapToFill > 0) ? Math.min(100, (accDed / gapToFill * 100)).toFixed(1) : "100.0";
-                html += `<tr class="text-center">
-                    <td class="py-4 font-black text-matte-gold">${m}</td>
-                    <td class="py-4">${formatter.format(Math.round(curPOS))}</td>
-                    <td class="py-4 text-orange-800">${curSaei > 1 ? formatter.format(Math.round(curSaei)) : '-'}</td>
-                    <td class="py-4 text-blue-800">${formatter.format(Math.round(curNet))}</td>
-                    <td class="py-4"><span class="px-2 py-0.5 bg-gray-100 rounded-full text-[10px] font-black">${displayPerc}%</span></td>
-                </tr>`;
+                html += `<tr class="text-center"><td class="py-4 font-black text-matte-gold">${m}</td><td class="py-4 en-font">${formatter.format(Math.round(curPOS))}</td><td class="py-4 text-orange-800 en-font">${curSaei > 1 ? formatter.format(Math.round(curSaei)) : '-'}</td><td class="py-4 text-blue-800 en-font">${formatter.format(Math.round(curNet))}</td><td class="py-4"><span class="px-2 py-0.5 bg-gray-100 rounded-full text-[10px] font-black en-font">${displayPerc}%</span></td></tr>`;
                 if (accDed >= gapToFill - 1) break;
             }
-
             document.getElementById('tableBody').innerHTML = html;
-            
-            document.getElementById('tableFooter').innerHTML = `
-                <tr style="background-color: #BCA37F !important; color: #000 !important; font-weight: 900 !important; text-align: center !important;">
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">الإجمالي</td>
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">${formatter.format(Math.round(totalPOSSum))}</td>
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #4A3728 !important;">${formatter.format(Math.round(totalSaeiSum))}</td>
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #1e3a8a !important;">${formatter.format(Math.round(totalNetSum))}</td>
-                    <td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">${(gapToFill > 0 ? Math.min(100, (totalPOSSum/gapToFill*100)) : 100).toFixed(1)}%</td>
-                </tr>`;
+            document.getElementById('tableFooter').innerHTML = `<tr style="background-color: #BCA37F !important; color: #000 !important; font-weight: 900 !important; text-align: center !important;"><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">الإجمالي</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${formatter.format(Math.round(totalPOSSum))}</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #4A3728 !important;" class="en-font">${formatter.format(Math.round(totalSaeiSum))}</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #1e3a8a !important;" class="en-font">${formatter.format(Math.round(totalNetSum))}</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${(gapToFill > 0 ? Math.min(100, (totalPOSSum/gapToFill*100)) : 100).toFixed(1)}%</td></tr>`;
             document.querySelectorAll('#displayNetPropSaving').forEach(el => el.innerText = formatter.format(Math.round(totalNetSum)));
             document.querySelectorAll('#displayMonthsCount').forEach(el => el.innerText = labels.length);
             document.querySelectorAll('#totalDeductionFooter').forEach(el => el.innerText = formatter.format(Math.round(totalPOSSum)));
