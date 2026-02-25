@@ -168,30 +168,53 @@
             nav h1 { font-size: 11px !important; }
         }
 
+        /* --- OPTIMIZED PRINT FOR A4 PORTRAIT (No rotation needed) --- */
         @media print {
-            @page { size: A3 landscape; margin: 10mm; }
-            nav, .no-print, button, .mode-selector-container, #modeDescription { display: none !important; }
-            body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; width: 100% !important; }
-            main { display: grid !important; grid-template-columns: repeat(12, 1fr) !important; gap: 5mm !important; }
-            aside { grid-column: span 4 !important; order: 1 !important; }
-            section { grid-column: span 8 !important; order: 2 !important; }
-            .print-header-container { display: table-header-group !important; }
-            .print-header-content { display: flex !important; flex-direction: row-reverse !important; justify-content: space-between !important; align-items: center !important; padding-bottom: 5mm !important; border-bottom: 3px solid #BCA37F !important; margin-bottom: 5mm !important; }
-            #mainChartContainer { height: 480px !important; border: 2px solid #BCA37F !important; }
-            .card-luxury { break-inside: avoid !important; border: 1px solid #EADBC8 !important; }
-            .print-break-before { break-before: page !important; page-break-before: always !important; margin-top: 15mm !important; }
-            table { width: 100% !important; border-collapse: collapse !important; border: 1px solid #ddd !important; }
-            tfoot { display: table-row-group !important; }
-            .gold-card { background-color: #BCA37F !important; padding: 1.5rem !important; border: 1px solid #111 !important; }
-            #tableFooter td { background-color: #BCA37F !important; color: black !important; font-weight: 900 !important; border: 1px solid #111 !important; }
+            @page { size: A4 portrait; margin: 5mm; }
             
-            /* Force shortfall treatment box in print if triggered */
+            nav, .no-print, button, .mode-selector-container, #modeDescription { display: none !important; }
+            
+            body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; width: 100% !important; }
+            
+            main { display: block !important; padding: 0 !important; width: 100% !important; }
+            
+            aside, section { width: 100% !important; display: block !important; margin-bottom: 5mm !important; }
+            
+            .card-luxury { break-inside: avoid !important; margin-bottom: 5mm !important; border: 1.5px solid #EADBC8 !important; padding: 1rem !important; }
+            
+            .grid { display: grid !important; }
+            .grid-cols-12 { grid-template-columns: repeat(12, 1fr) !important; }
+            .grid-cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
+            .grid-cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
+            
+            .print-header-container { display: table-header-group !important; }
+            
+            .print-header-content { 
+                display: flex !important; 
+                flex-direction: row-reverse !important; 
+                justify-content: space-between !important; 
+                align-items: center !important; 
+                padding-bottom: 3mm !important; 
+                border-bottom: 3px solid #BCA37F !important; 
+                margin-bottom: 3mm !important; 
+                width: 100% !important;
+            }
+            
+            #mainChartContainer { height: 350px !important; border: 1px solid #BCA37F !important; margin: 5mm 0 !important; }
+            
+            .print-break-before { break-before: page !important; page-break-before: always !important; }
+            
+            table { width: 100% !important; border-collapse: collapse !important; font-size: 10px !important; }
+            
+            .gold-card { background-color: #BCA37F !important; padding: 1rem !important; border: 1px solid #111 !important; color: black !important; }
+            
+            #tableFooter td { background-color: #BCA37F !important; color: black !important; font-weight: 900 !important; border: 1px solid #111 !important; }
+
             .suggested-rate-box[style*="display: block"] { 
                 display: block !important; 
                 border: 2px solid #BCA37F !important;
                 background-color: #FFF9E6 !important;
                 page-break-inside: avoid !important;
-                -webkit-print-color-adjust: exact;
             }
         }
     </style>
@@ -301,7 +324,7 @@
                             <div class="card-luxury border-r-8 border-r-matte-gold">
                                 <h2 class="card-header-main">محرك العمليات المالية</h2>
                                 
-                                <div class="flex gap-2 p-1 bg-gray-100 rounded-xl mb-3 mode-selector-container">
+                                <div class="flex gap-2 p-1 bg-gray-100 rounded-xl mb-3 no-print">
                                     <button id="modeValueBtn" class="mode-toggle-btn active" onclick="setCalcMode('value')">تحديد القدرة الشرائية</button>
                                     <button id="modeDurationBtn" class="mode-toggle-btn" onclick="setCalcMode('duration')">تخطيط جدول التملك</button>
                                 </div>
@@ -347,7 +370,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Shortfall Treatment Box -->
+                                    <!-- Shortfall Treatment Alert Box -->
                                     <div id="suggestedRateBox" class="suggested-rate-box">
                                         <div class="text-orange-900 mb-2 border-b border-matte-gold/10 pb-2 font-black">
                                             ⚠️ الوضع الراهن: هنالك عجز بزيادة قيمة <span id="shortfallAmountValue" class="en-font">0</span> في القسط الأخير.
@@ -409,7 +432,7 @@
 
                         <section class="lg:col-span-8 space-y-6">
                             
-                            <!-- Summary -->
+                            <!-- Summary Cards -->
                             <div class="card-luxury bg-[#F9F4ED] border-2 border-matte-gold/20 animate-up">
                                 <h2 class="card-header-main text-lg md:text-2xl mb-6 uppercase tracking-widest text-center">خطة التملك والتحصيل</h2>
                                 <div class="grid grid-cols-4 gap-3 md:gap-4">
@@ -629,7 +652,7 @@
                 if (contributionAtCurrentRate < gap - 1) {
                     suggestBox.style.display = 'block';
                     
-                    // Conditionally show duration increase bullet - FORCE HIDE IF 18
+                    // Conditionally hide duration increase bullet IF already at 18
                     if (targetDuration >= 18) {
                         durationOptionLi.style.setProperty('display', 'none', 'important');
                     } else {
