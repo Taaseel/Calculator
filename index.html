@@ -29,6 +29,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Force English numbers globally for inputs and results */
         input, select, .en-font, h3, p, span, td, th {
             font-variant-numeric: tabular-nums;
             -webkit-font-feature-settings: "tnum";
@@ -184,7 +185,7 @@
             .gold-card { background-color: #BCA37F !important; padding: 1.5rem !important; border: 1px solid #111 !important; }
             #tableFooter td { background-color: #BCA37F !important; color: black !important; font-weight: 900 !important; border: 1px solid #111 !important; }
             
-            /* FORCE SHOW SUGGESTED BOX IN PRINT */
+            /* Force shortfall treatment box in print if triggered */
             .suggested-rate-box[style*="display: block"] { 
                 display: block !important; 
                 border: 2px solid #BCA37F !important;
@@ -214,7 +215,7 @@
             </div>
             <button id="exportBtn" class="flex items-center gap-1.5 px-3 py-2 bg-matte-gold text-black font-black rounded-lg hover:brightness-110 shadow-md border-b-2 border-black/20 text-[10px] md:text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
                 <span>تصدير التقرير</span>
             </button>
@@ -346,7 +347,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Shortfall Notification Box -->
+                                    <!-- Treatment Notification Box -->
                                     <div id="suggestedRateBox" class="suggested-rate-box">
                                         <div class="text-orange-900 mb-2 border-b border-matte-gold/10 pb-2 font-black">
                                             ⚠️ الوضع الراهن: هنالك عجز بزيادة قيمة <span id="shortfallAmountValue" class="en-font">0</span> في القسط الأخير.
@@ -354,7 +355,7 @@
                                         <div class="font-black text-dark-brown mb-1">أما المعالجة كالتالي:</div>
                                         <ul class="text-[10px] space-y-1 pr-1 text-gray-800 font-bold">
                                             <li>• نسبة الاستقطاع المقترحة هي <span id="suggestedRateValue" class="text-red-700 en-font">0.00</span>% للوصول للهدف.</li>
-                                            <li>• زيادة مدة الادخار المستهدفة.</li>
+                                            <li id="increaseDurationBullet">• زيادة مدة الادخار المستهدفة.</li>
                                             <li>• دفع مقدمة (نقداً) بقيمة <span id="shortfallAmountValueSuggest" class="en-font text-blue-900">0</span> لتغطية العجز في القسط الأخير.</li>
                                         </ul>
                                     </div>
@@ -601,6 +602,7 @@
             const initialCash = getRawValue('initialPayment');
             const mainSales = getRawValue('mainAmount');
             const suggestBox = document.getElementById('suggestedRateBox');
+            const durationOptionLi = document.getElementById('increaseDurationBullet');
 
             if (mainSales <= 0) { suggestBox.style.display = 'none'; return; }
             
@@ -626,13 +628,25 @@
 
                 if (contributionAtCurrentRate < gap - 1) {
                     suggestBox.style.display = 'block';
+                    
+                    // Conditionally show duration increase bullet
+                    if (targetDuration >= 18) {
+                        durationOptionLi.style.display = 'none';
+                    } else {
+                        durationOptionLi.style.display = 'list-item';
+                    }
+
+                    // Calculate suggested rate
                     const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
                     document.getElementById('suggestedRateValue').innerText = precisionFormatter.format(neededRate);
+                    
                     const shortfallAmount = Math.max(0, gap - contributionAtCurrentRate);
                     const shortfallText = formatter.format(Math.round(shortfallAmount));
                     document.getElementById('shortfallAmountValue').innerText = shortfallText;
                     document.getElementById('shortfallAmountValueSuggest').innerText = shortfallText;
-                } else { suggestBox.style.display = 'none'; }
+                } else { 
+                    suggestBox.style.display = 'none'; 
+                }
                 calculateLedger(propertyVal, targetDuration, initialCash);
             }
         }
@@ -673,7 +687,8 @@
                 if (accDed + curPOS >= gapToFill - 1 || m === targetDuration) {
                     curPOS = Math.max(0, gapToFill - accDed);
                     if (m <= 5 && curSaei > 0) {
-                        let ratio = curPOS / ((isIntensive ? (monthlyBase + curSaei) : monthlyBase) || 1);
+                        let potentialPortion = isIntensive ? (monthlyBase + curSaei) : monthlyBase;
+                        let ratio = curPOS / (potentialPortion || 1);
                         curNet = isIntensive ? (monthlyBase * ratio) : curPOS;
                         curSaei = isIntensive ? (curSaei * ratio) : 0;
                     } else { curNet = curPOS; curSaei = 0; }
@@ -682,11 +697,13 @@
                 accDed += curPOS; totalPOSSum += curPOS; totalSaeiSum += curSaei; totalNetSum += curNet;
                 labels.push(m + ' M'); data.push(Math.round(accDed));
                 const displayPerc = (gapToFill > 0) ? Math.min(100, (accDed / gapToFill * 100)).toFixed(1) : "100.0";
+                
                 html += `<tr class="text-center"><td class="py-4 font-black text-matte-gold">${m}</td><td class="py-4 en-font">${formatter.format(Math.round(curPOS))}</td><td class="py-4 text-orange-800 en-font">${curSaei > 1 ? formatter.format(Math.round(curSaei)) : '-'}</td><td class="py-4 text-blue-800 en-font">${formatter.format(Math.round(curNet))}</td><td class="py-4"><span class="px-2 py-0.5 bg-gray-100 rounded-full text-[10px] font-black en-font">${displayPerc}%</span></td></tr>`;
                 if (accDed >= gapToFill - 1) break;
             }
             document.getElementById('tableBody').innerHTML = html;
             document.getElementById('tableFooter').innerHTML = `<tr style="background-color: #BCA37F !important; color: #000 !important; font-weight: 900 !important; text-align: center !important;"><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;">الإجمالي</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${formatter.format(Math.round(totalPOSSum))}</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #4A3728 !important;" class="en-font">${formatter.format(Math.round(totalSaeiSum))}</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important; color: #1e3a8a !important;" class="en-font">${formatter.format(Math.round(totalNetSum))}</td><td style="padding: 18px 10px !important; border-top: 3px solid #111 !important;" class="en-font">${(gapToFill > 0 ? Math.min(100, (totalPOSSum/gapToFill*100)) : 100).toFixed(1)}%</td></tr>`;
+            
             document.querySelectorAll('#displayNetPropSaving').forEach(el => el.innerText = formatter.format(Math.round(totalNetSum)));
             document.querySelectorAll('#displayMonthsCount').forEach(el => el.innerText = labels.length);
             document.querySelectorAll('#totalDeductionFooter').forEach(el => el.innerText = formatter.format(Math.round(totalPOSSum)));
