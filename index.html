@@ -342,7 +342,7 @@
                                     <div class="grid grid-cols-2 gap-3">
                                         <div>
                                             <div class="flex items-center justify-between mb-1">
-                                                <label id="durationLabel" class="input-label font-black text-blue-800">مدة الإدخار المختارة</label>
+                                                <label id="durationLabel" class="input-label font-black text-black">مدة الإدخار المختارة</label>
                                                 <div class="flex items-center gap-1 no-print">
                                                     <span class="text-[9px] text-gray-400 font-bold">تحكم يدوي</span>
                                                     <input type="checkbox" id="manualDurationToggle" class="w-3 h-3 accent-blue-800 cursor-pointer" onchange="toggleManualDuration()">
@@ -617,7 +617,6 @@
                 durationDropdown.disabled = false;
                 durationDropdown.classList.remove('output-highlight');
                 durationLabel.innerText = "مدة الإدخار المختارة";
-                propValLabel.innerText = "قيمة العقار المتاحة للتملك";
                 descEl.innerHTML = `حدد <span class="text-blue-800 font-black">(المدة)</span> لتعرف <span class="text-matte-gold font-black">(سعر العقار)</span> المتاح لك بناءً على مبيعاتك`;
             } else {
                 durationBtn.classList.add('active');
