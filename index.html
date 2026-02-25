@@ -766,12 +766,11 @@
 
                 if (contributionAtCurrentRate < gap - 0.5) {
                     suggestBox.style.display = 'block'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none';
-                    if (targetDuration >= 18 && !document.getElementById('manualDurationToggle').checked) {
-                        durationOptionLi.style.setProperty('display', 'none', 'important');
-                    } else {
-                        durationOptionLi.style.setProperty('display', 'list-item', 'important');
-                        durationOptionLi.innerHTML = `- زيادة مدة الادخار المستهدفة لتصبح <span class="en-font text-red-700">${suggestedDuration}</span> شهر.`;
-                    }
+                    
+                    // Always show the increase bullet if there's a deficit, even at 18 months
+                    durationOptionLi.style.setProperty('display', 'list-item', 'important');
+                    durationOptionLi.innerHTML = `- زيادة مدة الادخار المستهدفة لتصبح <span class="en-font text-red-700">${suggestedDuration}</span> شهر.`;
+
                     document.getElementById('suggestedRateValue').innerText = precisionFormatter.format(neededRate);
                     const shortfallAmount = Math.max(0, gap - contributionAtCurrentRate);
                     document.getElementById('shortfallAmountValue').innerText = formatter.format(Math.round(shortfallAmount));
