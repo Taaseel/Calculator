@@ -173,14 +173,14 @@
 
         @media (max-width: 768px) {
             main { grid-template-columns: 1fr !important; padding: 10px !important; gap: 16px !important; }
-            aside { order: 1 !important; } /* Inputs first on mobile */
-            section { order: 2 !important; } /* Results second on mobile */
+            aside { order: 1 !important; } 
+            section { order: 2 !important; } 
             .grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
             .grid-cols-3 { grid-template-columns: 1fr !important; }
             .grid-cols-2 { grid-template-columns: 1fr !important; }
             .card-luxury { padding: 1rem !important; }
             #mainChartContainer { height: 280px !important; }
-            .input-gold { font-size: 16px; padding: 10px; } /* Prevent iOS zoom */
+            .input-gold { font-size: 16px; padding: 10px; } 
             nav h1 { font-size: 10px !important; }
             .buyer-pay-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
             .card-title { font-size: 10px !important; }
@@ -251,7 +251,7 @@
                 <h1 class="text-[9px] sm:text-sm md:text-xl font-black text-black leading-tight">حاسبة منتج الإدخار العقاري (تأصيل)</h1>
             </div>
             <button id="exportBtn" class="flex items-center gap-1 px-2.5 py-2 bg-matte-gold text-black font-black rounded-lg hover:brightness-110 shadow-md border-b-2 border-black/20 text-[9px] md:text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
                 <span>تصدير</span>
@@ -392,6 +392,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- Treatment Notification Box -->
                                     <div id="suggestedRateBox" class="suggested-rate-box">
                                         <div class="text-orange-900 mb-2 border-b border-matte-gold/10 pb-2 font-black">
                                             ⚠️ عجز بقيمة <span id="shortfallAmountValue" class="en-font">0</span> في القسط الأخير.
@@ -399,8 +400,9 @@
                                         <div class="font-black text-dark-brown mb-1 text-[10px]">المعالجة المقترحة:</div>
                                         <ul class="text-[10px] space-y-1 pr-1 text-gray-800 font-bold list-none">
                                             <li>- نسبة استقطاع <span id="suggestedRateValue" class="text-red-700 en-font">0.00</span>% .</li>
-                                            <li id="increaseDurationBullet">- زيادة المدة لتصبح <span class="en-font text-red-700">0</span> شهر.</li>
-                                            <li>- مقدم إضافي <span id="shortfallAmountValueSuggest" class="en-font text-red-700">0</span> .</li>
+                                            <li id="increaseDurationBullet">- زيادة مدة الادخار المستهدفة لتصبح <span id="suggestedDurationValue" class="en-font text-red-700">0</span> شهر.</li>
+                                            <li>- دفع مقدمة (نقداً) بقيمة <span id="shortfallAmountValueSuggest" class="en-font text-red-700">0</span> لتغطية العجز.</li>
+                                            <li>- رفع متوسط مبيعات POS اليومية لتصبح <span id="suggestedDailySalesValue" class="en-font text-red-700">0</span> .</li>
                                         </ul>
                                     </div>
 
@@ -711,55 +713,75 @@
             const suggestBox = document.getElementById('suggestedRateBox');
             const optimizedBox = document.getElementById('optimizedRateBox');
             const earlyAlert = document.getElementById('earlySuccessAlert');
-            const durationOptionLi = document.getElementById('increaseDurationBullet');
-
-            if (mainSales <= 0) { suggestBox.style.display = 'none'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none'; return; }
             
-            const monthlyBase = mainSales * 30 * (deductionRate / 100);
-            const isIntensive = document.getElementById('intensiveMode').checked;
+            if (mainSales <= 0 && currentCalcMode === 'duration') {
+                suggestBox.style.display = 'none';
+                optimizedBox.style.display = 'none';
+                earlyAlert.style.display = 'none';
+                return;
+            }
+
             const targetDuration = getTargetDuration();
-            const k_intensive = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
-            const denominator = 1.02875 - (0.02875 * k_intensive);
+            const isIntensive = document.getElementById('intensiveMode').checked;
 
             if (currentCalcMode === 'value') {
+                const monthlyBase = mainSales * 30 * (deductionRate / 100);
+                const k_intensive = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
+                const denominator = 1.02875 - (0.02875 * k_intensive);
                 const affordablePropValue = (monthlyBase * targetDuration + initialCash) / denominator;
                 document.getElementById('propertyValue').value = formatter.format(Math.round(affordablePropValue));
                 calculateLedger(affordablePropValue, targetDuration, initialCash);
                 suggestBox.style.display = 'none'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none';
             } else {
                 const propertyVal = getRawValue('propertyValue');
-                if (propertyVal <= 0) { calculateLedger(0, targetDuration, initialCash); suggestBox.style.display = 'none'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none'; return; }
-                const gap = (propertyVal * 1.02875) - initialCash;
-                const intensiveK = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
-                const saeiPartWithVat = (propertyVal * 0.025) * 1.15;
-                const totalSaeiFullWithVat = (propertyVal * 0.05 * 1.15);
-                const contributionAtCurrentRate = (monthlyBase * targetDuration) + (intensiveK * saeiPartWithVat);
-                const neededRate = ((propertyVal * denominator - initialCash) / (mainSales * 30 * targetDuration)) * 100;
-                const upfrontNeeded = initialCash + saeiPartWithVat;
-                const gapToFillTotal = (propertyVal + totalSaeiFullWithVat) - upfrontNeeded;
-
-                let suggestedDuration = 0;
-                if (monthlyBase > 0) {
-                    suggestedDuration = Math.ceil((gapToFillTotal - (isIntensive ? saeiPartWithVat : 0)) / monthlyBase);
-                    if (isIntensive && suggestedDuration < 5) suggestedDuration = Math.ceil(gapToFillTotal / (monthlyBase + (saeiPartWithVat / 5)));
+                if (propertyVal <= 0) { 
+                    calculateLedger(0, targetDuration, initialCash); 
+                    suggestBox.style.display = 'none'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none'; 
+                    return; 
                 }
 
-                if (contributionAtCurrentRate < gap - 0.5) {
-                    suggestBox.style.display = 'block'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none';
-                    durationOptionLi.style.setProperty('display', 'list-item', 'important');
-                    durationOptionLi.innerHTML = `- زيادة مدة الادخار المستهدفة لتصبح <span class="en-font text-red-700">${suggestedDuration}</span> شهر.`;
+                const saeiPartWithVat = (propertyVal * 0.025) * 1.15;
+                const totalSaeiFullWithVat = (propertyVal * 0.05 * 1.15);
+                const upfrontPaid = initialCash + saeiPartWithVat;
+                const gapToFillTotal = (propertyVal + totalSaeiFullWithVat) - upfrontPaid;
+                
+                const intensiveK = isIntensive ? (Math.min(targetDuration, 5) / 5) : 0;
+                const contributionAtCurrentRate = (mainSales * 30 * (deductionRate / 100) * targetDuration) + (intensiveK * saeiPartWithVat);
+                const neededMonthlyNet = gapToFillTotal / targetDuration;
 
+                if (contributionAtCurrentRate < gapToFillTotal - 0.5) {
+                    suggestBox.style.display = 'block'; optimizedBox.style.display = 'none'; earlyAlert.style.display = 'none';
+                    
+                    // 1. Suggested Rate
+                    const neededRate = ((propertyVal * (1.02875 - (0.02875 * intensiveK)) - initialCash) / (mainSales * 30 * targetDuration)) * 100;
                     document.getElementById('suggestedRateValue').innerText = precisionFormatter.format(neededRate);
-                    const shortfallAmount = Math.max(0, gap - contributionAtCurrentRate);
+
+                    // 2. Suggested Duration
+                    let suggestedDuration = 0;
+                    const currentMonthlyBase = mainSales * 30 * (deductionRate / 100);
+                    if (currentMonthlyBase > 0) {
+                        suggestedDuration = Math.ceil((gapToFillTotal - (isIntensive ? saeiPartWithVat : 0)) / currentMonthlyBase);
+                        if (isIntensive && suggestedDuration < 5) suggestedDuration = Math.ceil(gapToFillTotal / (currentMonthlyBase + (saeiPartWithVat / 5)));
+                    }
+                    document.getElementById('suggestedDurationValue').innerText = suggestedDuration;
+
+                    // 3. Extra Cash
+                    const shortfallAmount = Math.max(0, gapToFillTotal - contributionAtCurrentRate);
                     document.getElementById('shortfallAmountValue').innerText = formatter.format(Math.round(shortfallAmount));
                     document.getElementById('shortfallAmountValueSuggest').innerText = formatter.format(Math.round(shortfallAmount));
+
+                    // 4. Suggested Daily Sales
+                    const neededDailySales = neededMonthlyNet / (30 * (deductionRate / 100));
+                    document.getElementById('suggestedDailySalesValue').innerText = formatter.format(Math.round(neededDailySales));
+
                 } else { suggestBox.style.display = 'none'; }
                 
                 const actualMonthsUsed = calculateLedger(propertyVal, targetDuration, initialCash);
-                if (currentCalcMode === 'duration' && actualMonthsUsed < targetDuration) {
+                if (actualMonthsUsed < targetDuration) {
                     optimizedBox.style.display = 'block';
                     document.getElementById('earlyActualDuration').innerText = actualMonthsUsed;
-                    document.getElementById('optimizedRateValue').innerText = precisionFormatter.format(Math.max(0, neededRate));
+                    const neededRateExact = ((propertyVal * (1.02875 - (0.02875 * intensiveK)) - initialCash) / (mainSales * 30 * targetDuration)) * 100;
+                    document.getElementById('optimizedRateValue').innerText = precisionFormatter.format(Math.max(0, neededRateExact));
                     document.getElementById('optimizedDurationTarget').innerText = targetDuration;
                 } else { optimizedBox.style.display = 'none'; }
             }
