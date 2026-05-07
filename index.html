@@ -545,118 +545,261 @@
 
     <!-- شاشة تسجيل الدخول بالتصميم البني والذهبي -->
 
-    <div id="loginScreen" class="fixed inset-0 z-[9999] bg-gradient-to-br from-dark-brown via-soft-brown to-obsidian flex items-center justify-center transition-opacity duration-700 print:hidden overflow-hidden">
+    <!-- ═══════════════════════════════════════════════════════
+         واجهة الدخول الفاخرة الفاتحة — Build Wise / تأصيل
+         ═══════════════════════════════════════════════════════ -->
+    <div id="loginScreen" class="fixed inset-0 z-[9999] flex items-center justify-center transition-opacity duration-700 print:hidden overflow-hidden" style="background:linear-gradient(135deg,#FDFBF7 0%,#F8F1E0 50%,#FAF6EC 100%);">
 
-        <div class="absolute inset-0 z-0 pointer-events-none w-full h-full flex justify-between items-center px-4 md:px-12 lg:px-24 opacity-30" dir="ltr">
+        <style>
+        /* ── زخارف ضوئية ناعمة ── */
+        #loginScreen .login-bg-orb {
+            position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none;
+            animation: orb-float 20s ease-in-out infinite;
+        }
+        @keyframes orb-float {
+            0%,100% { transform:translate(0,0) scale(1); }
+            33% { transform:translate(60px,-40px) scale(1.1); }
+            66% { transform:translate(-40px,30px) scale(0.95); }
+        }
+        @keyframes orb-float-2 {
+            0%,100% { transform:translate(0,0) scale(1); }
+            50% { transform:translate(-80px,60px) scale(1.15); }
+        }
+        @keyframes shimmer-light {
+            0% { background-position:-1000px 0; }
+            100% { background-position:1000px 0; }
+        }
+        @keyframes float-up-down {
+            0%,100% { transform:translateY(0); }
+            50% { transform:translateY(-8px); }
+        }
+        @keyframes fade-in-up {
+            from { opacity:0; transform:translateY(20px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+        @keyframes rotate-slow {
+            from { transform:rotate(0deg); }
+            to { transform:rotate(360deg); }
+        }
 
-            <div class="flex flex-col gap-6 w-1/4 h-full py-10">
+        /* ── شبكة هندسية خفيفة ── */
+        #loginScreen .login-grid-pattern {
+            position:absolute; inset:0; opacity:0.4; pointer-events:none;
+            background-image:
+                linear-gradient(rgba(212,175,55,0.18) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(212,175,55,0.18) 1px, transparent 1px);
+            background-size: 80px 80px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+        }
 
-                <div class="w-[150%] max-w-[350px] h-[30%] -ml-10 rounded-r-[100px] bg-gradient-to-r from-royal-gold to-dark-gold relative overflow-hidden shadow-2xl flex items-end px-6 gap-2">
+        /* ── خطوط ضوئية ذهبية ── */
+        #loginScreen .gold-line {
+            position:absolute; height:1px; opacity:0.4;
+            background:linear-gradient(90deg, transparent, rgba(212,175,55,0.7), transparent);
+        }
 
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+        /* ── حقل إدخال أنيق ── */
+        #loginScreen .lux-input {
+            background:#ffffff;
+            border:1.5px solid rgba(197,160,89,0.25);
+            color:#4C3B34;
+            transition:all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(76,59,52,0.04);
+        }
+        #loginScreen .lux-input::placeholder { color:rgba(109,85,75,0.4); font-weight:600; }
+        #loginScreen .lux-input:focus {
+            background:#ffffff;
+            border-color:#D4AF37;
+            box-shadow: 0 0 0 4px rgba(212,175,55,0.15), 0 4px 12px rgba(212,175,55,0.08);
+            outline:none;
+        }
 
-                    <div class="w-1/6 h-[30%] chart-bar"></div><div class="w-1/6 h-[60%] chart-bar"></div><div class="w-1/6 h-[40%] chart-bar"></div><div class="w-1/6 h-[80%] chart-bar"></div><div class="w-1/6 h-[50%] chart-bar"></div>
+        /* ── البطاقة الفاخرة ── */
+        #loginScreen .glass-card {
+            background:rgba(255,255,255,0.7);
+            backdrop-filter:blur(20px) saturate(140%);
+            -webkit-backdrop-filter:blur(20px) saturate(140%);
+            border:1.5px solid rgba(212,175,55,0.22);
+            box-shadow:
+                0 24px 60px -12px rgba(76,59,52,0.15),
+                0 0 80px -20px rgba(212,175,55,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+            animation: fade-in-up 0.8s ease-out;
+        }
 
-                </div>
+        /* ── زر الدخول الفاخر ── */
+        #loginScreen .lux-button {
+            background:linear-gradient(135deg, #D4AF37 0%, #C19A2E 50%, #9B7838 100%);
+            background-size: 200% 100%;
+            background-position: 0% 50%;
+            box-shadow:
+                0 10px 24px -6px rgba(212,175,55,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position:relative; overflow:hidden;
+        }
+        #loginScreen .lux-button::before {
+            content:''; position:absolute; inset:0;
+            background:linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%);
+            transform:translateX(-100%); transition:transform 0.6s;
+        }
+        #loginScreen .lux-button:hover {
+            background-position: 100% 50%;
+            transform:translateY(-2px);
+            box-shadow:
+                0 16px 36px -8px rgba(212,175,55,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        #loginScreen .lux-button:hover::before { transform:translateX(100%); }
+        #loginScreen .lux-button:active { transform:translateY(0); }
 
-                <div class="w-[150%] max-w-[350px] h-[35%] -ml-10 rounded-r-[100px] bg-gradient-to-r from-dark-gold to-matte-gold relative overflow-hidden shadow-2xl flex items-end px-6 gap-2 mt-auto mb-10">
+        /* ── شعار يطفو ── */
+        #loginScreen .logo-float { animation: float-up-down 4s ease-in-out infinite; }
 
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+        /* ── الزخارف الجانبية ── */
+        #loginScreen .corner-deco {
+            position:absolute; width:140px; height:140px; pointer-events:none; opacity:0.55;
+        }
+        #loginScreen .corner-deco svg { width:100%; height:100%; }
 
-                    <svg class="absolute top-0 left-0 w-full h-full" preserveAspectRatio="none"><path d="M0,50 Q40,80 80,40 T160,60 T250,20" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/></svg>
+        /* ── شارة "آمن" ── */
+        #loginScreen .secure-badge {
+            display:inline-flex; align-items:center; gap:6px;
+            background:rgba(21,128,61,0.08); border:1px solid rgba(21,128,61,0.2);
+            padding:5px 12px; border-radius:99px;
+            color:#15803D; font-size:11px; font-weight:800;
+        }
 
-                    <div class="w-1/6 h-[70%] chart-bar"></div><div class="w-1/6 h-[40%] chart-bar"></div><div class="w-1/6 h-[90%] chart-bar"></div><div class="w-1/6 h-[50%] chart-bar"></div><div class="w-1/6 h-[30%] chart-bar"></div>
+        @media (max-width: 768px) {
+            #loginScreen .corner-deco { display:none; }
+        }
+        </style>
 
-                </div>
+        <!-- خلفية: orbs ضوئية فاتحة -->
+        <div class="login-bg-orb" style="top:-100px; right:-100px; width:520px; height:520px; background:radial-gradient(circle, rgba(212,175,55,0.45), transparent 70%);"></div>
+        <div class="login-bg-orb" style="bottom:-150px; left:-100px; width:600px; height:600px; background:radial-gradient(circle, rgba(155,120,56,0.28), transparent 70%); animation:orb-float-2 22s ease-in-out infinite;"></div>
+        <div class="login-bg-orb" style="top:30%; left:50%; width:400px; height:400px; background:radial-gradient(circle, rgba(245,220,138,0.5), transparent 70%); animation-delay:-9s;"></div>
 
-            </div>
+        <!-- شبكة هندسية -->
+        <div class="login-grid-pattern"></div>
 
-            <div class="w-1/5 max-w-[200px] h-[80%] rounded-[100px] bg-gradient-to-b from-[#C9AE8E] via-soft-brown to-dark-brown relative overflow-hidden shadow-2xl flex items-end px-4 gap-2 opacity-90">
+        <!-- خطوط ضوئية أفقية -->
+        <div class="gold-line" style="top:25%; left:0; right:0;"></div>
+        <div class="gold-line" style="bottom:20%; left:0; right:0;"></div>
 
-                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-
-                <svg class="absolute top-0 left-0 w-full h-full" preserveAspectRatio="none"><path d="M0,150 L40,200 L80,170 L120,250 L160,220" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="3"/></svg>
-
-                <div class="w-1/4 h-[30%] chart-bar"></div><div class="w-1/4 h-[50%] chart-bar"></div><div class="w-1/4 h-[20%] chart-bar"></div><div class="w-1/4 h-[40%] chart-bar"></div>
-
-            </div>
-
+        <!-- زخرفة الزاوية العلوية اليمنى -->
+        <div class="corner-deco" style="top:40px; right:40px;">
+            <svg viewBox="0 0 140 140" fill="none">
+                <path d="M10 10 L130 10 L130 60" stroke="#9B7838" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="130" cy="10" r="4" fill="#D4AF37"/>
+                <circle cx="10" cy="10" r="4" fill="#D4AF37"/>
+                <path d="M30 30 L110 30 L110 50" stroke="#9B7838" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+            </svg>
         </div>
 
-        <div class="bg-white/10 backdrop-blur-2xl border border-white/20 p-10 md:p-14 rounded-[2.5rem] shadow-2xl max-w-md w-[90%] relative z-10 text-center transform transition-all duration-500 hover:scale-[1.02]" dir="rtl">
+        <!-- زخرفة الزاوية السفلية اليسرى -->
+        <div class="corner-deco" style="bottom:40px; left:40px;">
+            <svg viewBox="0 0 140 140" fill="none">
+                <path d="M130 130 L10 130 L10 80" stroke="#9B7838" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="10" cy="130" r="4" fill="#D4AF37"/>
+                <circle cx="130" cy="130" r="4" fill="#D4AF37"/>
+                <path d="M110 110 L30 110 L30 90" stroke="#9B7838" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+            </svg>
+        </div>
 
-            <div class="mb-8 flex flex-col items-center justify-center">
+        <!-- البطاقة الرئيسية -->
+        <div class="glass-card relative z-10 rounded-[2.5rem] p-10 md:p-12 max-w-[460px] w-[90%]" dir="rtl">
 
-                <svg width="80" height="40" viewBox="0 0 290 160" class="mb-6 drop-shadow-lg">
+            <!-- الشعار + العلامة التجارية -->
+            <div class="flex flex-col items-center mb-10">
+                <div class="logo-float relative mb-5">
+                    <div style="position:absolute; inset:-12px; border:1.5px dashed rgba(212,175,55,0.4); border-radius:50%; animation:rotate-slow 30s linear infinite;"></div>
+                    <div style="position:absolute; inset:-22px; border:1px dashed rgba(212,175,55,0.25); border-radius:50%; animation:rotate-slow 45s linear infinite reverse;"></div>
+                    <div style="width:96px; height:96px; border-radius:50%; background:linear-gradient(135deg, #FFFFFF, #FCF4DC); display:flex; align-items:center; justify-content:center; border:1.5px solid rgba(212,175,55,0.4); box-shadow:inset 0 2px 8px rgba(212,175,55,0.15), 0 8px 28px rgba(212,175,55,0.18);">
+                        <svg width="56" height="32" viewBox="0 0 290 160">
+                            <path d="M20 10 H70 A 21 21 0 0 1 70 52 H20 V10 Z" fill="#D4AF37"/>
+                            <path d="M20 58 H70 A 21 21 0 0 1 70 100 H20 V58 Z" fill="#D4AF37"/>
+                            <rect x="125" y="10" width="38" height="90" rx="19" fill="#D4AF37"/>
+                            <rect x="178" y="45" width="38" height="55" rx="19" fill="#D4AF37"/>
+                            <rect x="231" y="10" width="38" height="90" rx="19" fill="#D4AF37"/>
+                        </svg>
+                    </div>
+                </div>
 
-                    <path d="M20 10 H70 A 21 21 0 0 1 70 52 H20 V10 Z" fill="#D4AF37"/>
+                <h1 class="text-3xl md:text-4xl font-black tracking-[0.3em] mb-3 en-font" style="background:linear-gradient(135deg,#9B7838 0%,#D4AF37 30%,#B8923B 50%,#D4AF37 70%,#9B7838 100%); -webkit-background-clip:text; background-clip:text; color:transparent; background-size:200% auto; animation:shimmer-light 5s linear infinite;">BUILD WISE</h1>
 
-                    <path d="M20 58 H70 A 21 21 0 0 1 70 100 H20 V58 Z" fill="#D4AF37"/>
+                <div class="flex items-center gap-3 mb-3">
+                    <div style="height:1px; width:40px; background:linear-gradient(90deg, transparent, rgba(212,175,55,0.7));"></div>
+                    <div style="width:6px; height:6px; border-radius:50%; background:#D4AF37; box-shadow:0 0 12px rgba(212,175,55,0.7);"></div>
+                    <div style="height:1px; width:40px; background:linear-gradient(90deg, rgba(212,175,55,0.7), transparent);"></div>
+                </div>
 
-                    <rect x="125" y="10" width="38" height="90" rx="19" fill="#D4AF37"/>
+                <h2 class="text-2xl font-black mb-2" style="color:#9B7838; letter-spacing:0.1em; text-shadow:0 1px 2px rgba(212,175,55,0.15);">تأصيل</h2>
 
-                    <rect x="178" y="45" width="38" height="55" rx="19" fill="#D4AF37"/>
+                <p class="text-xs font-bold mt-1" style="color:#6D554B; letter-spacing:0.1em;">المنظومة الأولى لتمكين التملك العقاري</p>
+            </div>
 
-                    <rect x="231" y="10" width="38" height="90" rx="19" fill="#D4AF37"/>
+            <!-- نموذج الدخول -->
+            <div class="space-y-5">
 
-                </svg>
+                <div>
+                    <label class="block text-[11px] font-black mb-2 px-1" style="color:#9B7838; letter-spacing:0.18em;">اسم المستخدم</label>
+                    <div class="relative">
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2" style="color:#C5A059; pointer-events:none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <input type="text" id="loginUser" autocomplete="username" placeholder="Username" dir="ltr" class="lux-input w-full rounded-2xl py-4 pr-12 pl-5 text-base en-font font-bold !text-left">
+                    </div>
+                </div>
 
-                <h1 class="text-3xl font-black text-white tracking-[0.25em] en-font leading-none mb-2 shadow-black drop-shadow-md">BUILD WISE</h1>
+                <div>
+                    <label class="block text-[11px] font-black mb-2 px-1" style="color:#9B7838; letter-spacing:0.18em;">كلمة المرور</label>
+                    <div class="relative">
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2" style="color:#C5A059; pointer-events:none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <input type="password" id="loginPass" autocomplete="current-password" placeholder="••••••••" dir="ltr" onkeypress="if(event.key === 'Enter') handleLogin()" class="lux-input w-full rounded-2xl py-4 pr-12 pl-5 text-lg en-font font-black tracking-widest !text-left">
+                    </div>
+                </div>
 
-                <h2 class="text-2xl font-black text-royal-gold drop-shadow-md">تأصيل</h2>
+                <div id="loginError" class="hidden text-sm font-bold py-3 px-4 rounded-xl" style="background:rgba(190,18,60,0.08); border:1px solid rgba(190,18,60,0.25); color:#BE123C; align-items:center; justify-content:center; gap:8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>بيانات الدخول غير صحيحة</span>
+                </div>
+
+                <button onclick="handleLogin()" class="lux-button w-full py-4 rounded-2xl font-black text-base flex justify-center items-center gap-3 mt-2" style="color:#FFFFFF; letter-spacing:0.05em;">
+                    <span>تسجيل الدخول</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </button>
+
+                <div class="flex justify-center pt-2">
+                    <span class="secure-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                        اتصال آمن ومشفّر
+                    </span>
+                </div>
 
             </div>
 
-            <div class="space-y-5 text-right">
-
-                <div>
-
-                    <label class="block text-[12px] font-black text-light-gold mb-1.5 px-1 tracking-wider">اسم المستخدم</label>
-
-                    <div class="relative flex items-center">
-
-                        <input type="text" id="loginUser" class="w-full bg-white/90 border border-transparent focus:bg-white focus:border-royal-gold focus:ring-4 focus:ring-royal-gold/30 rounded-2xl py-4 px-4 pr-12 text-base outline-none transition-all text-dark-brown font-bold en-font !text-left shadow-inner" placeholder="Username" dir="ltr">
-
-                        <span class="absolute right-4 text-dark-gold"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
-
-                    </div>
-
-                </div>
-
-                <div>
-
-                    <label class="block text-[12px] font-black text-light-gold mb-1.5 px-1 tracking-wider">كلمة المرور</label>
-
-                    <div class="relative flex items-center">
-
-                        <input type="password" id="loginPass" class="w-full bg-white/90 border border-transparent focus:bg-white focus:border-royal-gold focus:ring-4 focus:ring-royal-gold/30 rounded-2xl py-4 px-4 pr-12 text-lg outline-none transition-all text-dark-brown font-black en-font !text-left tracking-widest shadow-inner" placeholder="••••••••" dir="ltr" onkeypress="if(event.key === 'Enter') handleLogin()">
-
-                         <span class="absolute right-4 text-dark-gold"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
-
-                    </div>
-
-                </div>
-
-                <div id="loginError" class="text-white text-sm font-bold hidden bg-danger-red/90 py-3 px-4 rounded-xl border border-red-400 flex items-center justify-center gap-2 shadow-lg">
-
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> بيانات الدخول غير صحيحة
-
-                </div>
-
-                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-royal-gold to-dark-gold text-dark-brown py-4 rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 mt-4 flex justify-center items-center gap-3">
-
-                    تسجيل الدخول
-
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-
-                </button>
-
+            <div class="mt-8 pt-6" style="border-top:1px solid rgba(212,175,55,0.2);">
+                <p class="text-center text-[10px] font-bold" style="color:#9B7838; letter-spacing:0.2em; opacity:0.7;">© 2026 BUILD WISE — TAASEEL</p>
             </div>
 
         </div>
 
     </div>
 
+    <!-- حاوية البرنامج الرئيسي -->
     <!-- حاوية البرنامج الرئيسي -->
 
     <div id="mainApplicationContainer" class="opacity-0 transition-opacity duration-500 hidden pb-20">
@@ -2311,11 +2454,30 @@
 
                 </div>
 
-                <button onclick="closeReDbModal()" class="text-gray-400 hover:text-danger-red bg-gray-50 hover:bg-red-50 p-2.5 rounded-xl transition-colors border border-gray-200">
+                <div class="flex items-center gap-2">
+                    <button onclick="saveREDBSnapshot()" class="flex items-center gap-2 bg-gradient-to-l from-royal-gold to-dark-gold hover:from-dark-gold hover:to-royal-gold text-white font-black text-sm px-4 py-2.5 rounded-xl shadow-md transition-all border border-royal-gold/30" title="حفظ نسخة احتياطية من القاعدة الحالية">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        <span>حفظ</span>
+                    </button>
+                    <button onclick="restoreREDBSnapshot()" class="flex items-center gap-2 bg-gradient-to-l from-amber-500 to-amber-700 hover:from-amber-700 hover:to-amber-500 text-white font-black text-sm px-4 py-2.5 rounded-xl shadow-md transition-all border border-amber-700/30" title="استعادة آخر نسخة محفوظة">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        <span>استعادة</span>
+                    </button>
+                    <button onclick="exportREDB()" class="flex items-center gap-2 bg-gradient-to-l from-success-green to-emerald-600 hover:from-emerald-600 hover:to-success-green text-white font-black text-sm px-4 py-2.5 rounded-xl shadow-md transition-all border border-emerald-700/20" title="تصدير قاعدة البيانات إلى ملف JSON">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>تصدير</span>
+                    </button>
+                    <button onclick="document.getElementById('redbImportFile').click()" class="flex items-center gap-2 bg-gradient-to-l from-info-blue to-sky-600 hover:from-sky-600 hover:to-info-blue text-white font-black text-sm px-4 py-2.5 rounded-xl shadow-md transition-all border border-sky-700/20" title="استيراد قاعدة البيانات من ملف JSON">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <span>استيراد</span>
+                    </button>
+                    <input type="file" id="redbImportFile" accept=".json,application/json" style="display:none;" onchange="importREDB(event)">
+                    <button onclick="closeReDbModal()" class="text-gray-400 hover:text-danger-red bg-gray-50 hover:bg-red-50 p-2.5 rounded-xl transition-colors border border-gray-200" title="إغلاق">
 
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
 
-                </button>
+                    </button>
+                </div>
 
             </div>
 
@@ -2798,6 +2960,250 @@
         function getREDB() { try { const data = localStorage.getItem(RE_DB_KEY); return data ? JSON.parse(data) : defaultREDB; } catch(e) { return defaultREDB; } }
 
         function saveREDB(db) { localStorage.setItem(RE_DB_KEY, JSON.stringify(db)); }
+
+        // تصدير قاعدة بيانات المطورين إلى ملف JSON
+        const RE_DB_SNAPSHOT_KEY = 'taseel_re_db_snapshot';
+
+        // حفظ نسخة احتياطية من القاعدة الحالية في localStorage
+        function saveREDBSnapshot() {
+            try {
+                const db = getREDB();
+                if (!db || db.length === 0) {
+                    if (typeof showToast === 'function') showToast('قاعدة البيانات فارغة - لا يوجد ما يُحفظ');
+                    return;
+                }
+                const snapshot = {
+                    savedAt: new Date().toISOString(),
+                    count: db.length,
+                    data: db
+                };
+                localStorage.setItem(RE_DB_SNAPSHOT_KEY, JSON.stringify(snapshot));
+                const dt = new Date().toLocaleString('ar-SA');
+                if (typeof showToast === 'function') showToast(`تم حفظ نسخة من ${db.length} وحدة (${dt})`);
+            } catch(e) {
+                console.error('Snapshot save error:', e);
+                if (typeof showToast === 'function') showToast('فشل حفظ النسخة الاحتياطية');
+            }
+        }
+
+        // استعادة آخر نسخة محفوظة
+        function restoreREDBSnapshot() {
+            try {
+                const raw = localStorage.getItem(RE_DB_SNAPSHOT_KEY);
+                if (!raw) {
+                    if (typeof showToast === 'function') showToast('لا توجد نسخة محفوظة سابقاً');
+                    return;
+                }
+                const snapshot = JSON.parse(raw);
+                if (!snapshot.data || !Array.isArray(snapshot.data)) {
+                    if (typeof showToast === 'function') showToast('النسخة المحفوظة تالفة');
+                    return;
+                }
+                const dt = new Date(snapshot.savedAt).toLocaleString('ar-SA');
+                const currentCount = getREDB().length;
+                const msg = `سيتم استبدال القاعدة الحالية (${currentCount} وحدة) بالنسخة المحفوظة بتاريخ ${dt} (${snapshot.count} وحدة).\n\nهل تريد المتابعة؟`;
+                if (!confirm(msg)) return;
+                const renumbered = _renumberREDB(snapshot.data);
+                saveREDB(renumbered);
+                renderReDbTable();
+                if (typeof showToast === 'function') showToast(`تم استعادة ${renumbered.length} وحدة بنجاح`);
+            } catch(e) {
+                console.error('Snapshot restore error:', e);
+                if (typeof showToast === 'function') showToast('فشل استعادة النسخة');
+            }
+        }
+
+        function exportREDB() {
+            try {
+                const db = getREDB();
+                if (!db || db.length === 0) {
+                    if (typeof showToast === 'function') showToast('قاعدة البيانات فارغة - لا يوجد ما يُصدَّر');
+                    return;
+                }
+                const exportData = {
+                    type: 'taseel-real-estate-db',
+                    version: '1.0',
+                    exportedAt: new Date().toISOString(),
+                    count: db.length,
+                    data: db
+                };
+                const json = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const ts = new Date().toISOString().slice(0,10);
+                a.download = `taseel-real-estate-db-${ts}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                if (typeof showToast === 'function') showToast(`تم تصدير ${db.length} وحدة بنجاح`);
+            } catch(e) {
+                console.error('Export error:', e);
+                if (typeof showToast === 'function') showToast('فشل تصدير قاعدة البيانات');
+            }
+        }
+
+        // مفتاح فريد للسجل بناءً على البيانات الفعلية (لكشف التكرار)
+        function _redbRowKey(item) {
+            const norm = v => String(v || '').trim().toLowerCase();
+            return [
+                norm(item.city),
+                norm(item.neighborhood),
+                norm(item.unitType),
+                norm(item.project),
+                norm(item.developer),
+                Number(item.price) || 0,
+                Number(item.area) || 0
+            ].join('|');
+        }
+
+        // إعادة ترقيم id بشكل تسلسلي 1, 2, 3, ...
+        function _renumberREDB(arr) {
+            return arr.map((item, idx) => ({ ...item, id: idx + 1 }));
+        }
+
+        // ───── معاينة الاستيراد التفاعلية ─────
+        let _importPreviewItems = [];   // [{item, status:'new'|'dup', selected:bool}]
+
+        function importREDB(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    let imported;
+                    if (Array.isArray(parsed)) imported = parsed;
+                    else if (parsed && Array.isArray(parsed.data)) imported = parsed.data;
+                    else { if (typeof showToast === 'function') showToast('صيغة الملف غير صحيحة'); event.target.value=''; return; }
+
+                    const isValid = imported.every(item => item && typeof item === 'object' && ('city' in item || 'developer' in item || 'project' in item));
+                    if (!isValid) { if (typeof showToast === 'function') showToast('بيانات الملف غير صالحة'); event.target.value=''; return; }
+
+                    const currentDb = getREDB();
+                    const currentKeys = new Set(currentDb.map(_redbRowKey));
+                    const seenInFile = new Set();
+
+                    // صنف كل عنصر: new (إضافي) أو dup (متشابه)
+                    _importPreviewItems = imported
+                        .filter(item => {
+                            const k = _redbRowKey(item);
+                            if (seenInFile.has(k)) return false;  // إزالة التكرار داخل الملف نفسه
+                            seenInFile.add(k);
+                            return true;
+                        })
+                        .map(item => ({
+                            item: item,
+                            status: currentKeys.has(_redbRowKey(item)) ? 'dup' : 'new',
+                            selected: !currentKeys.has(_redbRowKey(item))  // الجديدة محددة افتراضياً
+                        }));
+
+                    renderImportPreview();
+                    document.getElementById('redbImportPreviewModal').classList.remove('hidden');
+                } catch(err) {
+                    console.error('Import error:', err);
+                    if (typeof showToast === 'function') showToast('فشل قراءة الملف - تأكد أنه ملف JSON صحيح');
+                }
+                event.target.value = '';
+            };
+            reader.onerror = () => { if (typeof showToast === 'function') showToast('فشل قراءة الملف'); event.target.value=''; };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function renderImportPreview() {
+            const tbody = document.getElementById('previewTableBody');
+            if (!tbody) return;
+            const newCount = _importPreviewItems.filter(p => p.status==='new').length;
+            const dupCount = _importPreviewItems.filter(p => p.status==='dup').length;
+            const selCount = _importPreviewItems.filter(p => p.selected).length;
+            document.getElementById('previewNewCount').innerText = newCount;
+            document.getElementById('previewDupCount').innerText = dupCount;
+            document.getElementById('previewSelectedCount').innerText = selCount;
+
+            let html = '';
+            _importPreviewItems.forEach((row, idx) => {
+                const it = row.item;
+                const statusBadge = row.status === 'new'
+                    ? '<span style="display:inline-flex;align-items:center;gap:4px;background:#DCFCE7;color:#15803D;font-weight:900;font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid #86EFAC;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>جديد</span>'
+                    : '<span style="display:inline-flex;align-items:center;gap:4px;background:#FEF3C7;color:#B45309;font-weight:900;font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid #FCD34D;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>متشابه</span>';
+                const rowBg = row.status === 'dup' ? 'background:#FFFBEB;' : '';
+                html += `<tr class="hover:bg-gray-50 transition-colors" style="${rowBg}">
+                    <td class="py-2.5 px-2 text-center"><input type="checkbox" ${row.selected?'checked':''} onchange="previewToggleRow(${idx}, this.checked)" class="w-4 h-4 cursor-pointer" style="accent-color:#D4AF37;"></td>
+                    <td class="py-2.5 px-2 en-font font-bold text-gray-500">${idx+1}</td>
+                    <td class="py-2.5 px-2">${statusBadge}</td>
+                    <td class="py-2.5 px-2 font-bold">${it.city||'-'}</td>
+                    <td class="py-2.5 px-2">${it.neighborhood||'-'}</td>
+                    <td class="py-2.5 px-2 font-bold">${it.unitType||'-'}</td>
+                    <td class="py-2.5 px-2 font-bold text-dark-brown">${it.project||'-'}</td>
+                    <td class="py-2.5 px-2 text-sm">${it.developer||'-'}</td>
+                    <td class="py-2.5 px-2 en-font font-black text-royal-gold">${numFormat.format(it.price||0)}</td>
+                    <td class="py-2.5 px-2 en-font">${it.area||0}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html || '<tr><td colspan="10" class="py-12 text-center text-gray-500 font-bold">لا توجد سجلات</td></tr>';
+
+            // checkbox "تحديد الكل" الرئيسي
+            const allCb = document.getElementById('previewSelectAllCb');
+            if (allCb) {
+                if (selCount === 0) { allCb.checked = false; allCb.indeterminate = false; }
+                else if (selCount === _importPreviewItems.length) { allCb.checked = true; allCb.indeterminate = false; }
+                else { allCb.checked = false; allCb.indeterminate = true; }
+            }
+        }
+
+        function previewToggleRow(idx, checked) {
+            if (_importPreviewItems[idx]) {
+                _importPreviewItems[idx].selected = checked;
+                renderImportPreview();
+            }
+        }
+
+        function previewToggleAll(scope, checked) {
+            _importPreviewItems.forEach(row => {
+                if (scope === 'all' || row.status === scope) row.selected = checked;
+            });
+            renderImportPreview();
+        }
+
+        function cancelImportPreview() {
+            document.getElementById('redbImportPreviewModal').classList.add('hidden');
+            _importPreviewItems = [];
+        }
+
+        function confirmImportPreview() {
+            const selected = _importPreviewItems.filter(r => r.selected).map(r => r.item);
+            if (selected.length === 0) {
+                if (typeof showToast === 'function') showToast('لم تختر أي وحدة للاستيراد');
+                return;
+            }
+            const replaceAll = document.getElementById('previewReplaceAllCb').checked;
+            const currentDb = getREDB();
+
+            let finalDb;
+            if (replaceAll) {
+                finalDb = selected;
+            } else {
+                // دمج: أبقِ القديم، أضِف الجديد، استبدل المتشابه
+                const selectedKeys = new Set(selected.map(_redbRowKey));
+                const kept = currentDb.filter(item => !selectedKeys.has(_redbRowKey(item)));
+                finalDb = [...kept, ...selected];
+            }
+
+            const renumbered = _renumberREDB(finalDb);
+            saveREDB(renumbered);
+            renderReDbTable();
+            cancelImportPreview();
+
+            const newCount = selected.filter(s => !new Set(currentDb.map(_redbRowKey)).has(_redbRowKey(s))).length;
+            const dupCount = selected.length - newCount;
+            let msg = `تم الاستيراد: ${selected.length} وحدة`;
+            if (newCount > 0) msg += ` (${newCount} جديدة`;
+            if (dupCount > 0) msg += `${newCount > 0 ? '، ' : ' ('}${dupCount} مستبدلة`;
+            if (newCount > 0 || dupCount > 0) msg += ')';
+            if (typeof showToast === 'function') showToast(msg);
+        }
 
         function getSafeStorage() { try { let data = localStorage.getItem(STORAGE_KEY); if (!data) return {}; let parsed = JSON.parse(data); return (typeof parsed === 'object' && parsed !== null) ? parsed : {}; } catch(e) { return {}; } }
 
@@ -3297,7 +3703,7 @@
 
             if (user.toLowerCase() === 'buildwise' && pass === 'Taaseel2026') {
 
-                errDiv.classList.add('hidden'); const loginScreen = document.getElementById('loginScreen'); const mainApp = document.getElementById('mainApplicationContainer'); const body = document.getElementById('body-container');
+                errDiv.classList.add('hidden'); errDiv.style.display='none'; const loginScreen = document.getElementById('loginScreen'); const mainApp = document.getElementById('mainApplicationContainer'); const body = document.getElementById('body-container');
 
                 loginScreen.classList.add('opacity-0');
 
@@ -3305,7 +3711,7 @@
 
             } else {
 
-                errDiv.classList.remove('hidden'); const box = errDiv.parentElement; box.classList.add('animate-[pulse_0.3s_ease-in-out_2]');
+                errDiv.classList.remove('hidden'); errDiv.style.display='flex'; const box = errDiv.parentElement; box.classList.add('animate-[pulse_0.3s_ease-in-out_2]');
 
                 setTimeout(() => box.classList.remove('animate-[pulse_0.3s_ease-in-out_2]'), 600);
 
@@ -3879,7 +4285,7 @@
 
             } else { 
 
-                filteredDb.forEach(entry => { 
+                filteredDb.forEach((entry, _idx) => { 
 
                     let priceSqm = entry.area > 0 ? (entry.price / entry.area) : 0; 
 
@@ -3899,7 +4305,7 @@
 
                     actionButtons += `<button onclick="deleteREEntry(${entry.id})" title="حذف العقار" class="text-danger-red hover:bg-red-50 p-1.5 rounded-lg transition-colors"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></button></div>`;
 
-                    html += `<tr class="hover:bg-gray-50 transition-colors border-b border-gray-100"><td class="py-3 px-2 en-font text-dark-brown font-bold">${entry.id}</td><td class="py-3 px-2 font-bold">${entry.city}</td><td class="py-3 px-2">${entry.neighborhood}</td><td class="py-3 px-2 font-bold">${entry.unitType}</td><td class="py-3 px-2 font-bold text-dark-brown">${entry.project}</td><td class="py-3 px-2 text-sm">${entry.developer}</td><td class="py-3 px-2 text-sm font-black">${reservationStatus}</td><td class="py-3 px-2 en-font font-black text-royal-gold">${numFormat.format(entry.price)}</td><td class="py-3 px-2 en-font font-bold">${entry.area}</td><td class="py-3 px-2 en-font text-gray-500">${numFormat.format(priceSqm)}</td><td class="py-3 px-2 text-center">${entry.imageUrl ? `<a href="${entry.imageUrl}" target="_blank" rel="noopener" title="عرض الصورة" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;color:#2563EB;text-decoration:none;transition:all 0.15s;" onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></a>` : `<span style="color:#D1D5DB;font-size:11px;">—</span>`}</td><td class="py-3 px-2">${actionButtons}</td></tr>`; 
+                    html += `<tr class="hover:bg-gray-50 transition-colors border-b border-gray-100"><td class="py-3 px-2 en-font text-dark-brown font-bold">${_idx + 1}</td><td class="py-3 px-2 font-bold">${entry.city}</td><td class="py-3 px-2">${entry.neighborhood}</td><td class="py-3 px-2 font-bold">${entry.unitType}</td><td class="py-3 px-2 font-bold text-dark-brown">${entry.project}</td><td class="py-3 px-2 text-sm">${entry.developer}</td><td class="py-3 px-2 text-sm font-black">${reservationStatus}</td><td class="py-3 px-2 en-font font-black text-royal-gold">${numFormat.format(entry.price)}</td><td class="py-3 px-2 en-font font-bold">${entry.area}</td><td class="py-3 px-2 en-font text-gray-500">${numFormat.format(priceSqm)}</td><td class="py-3 px-2 text-center">${entry.imageUrl ? `<a href="${entry.imageUrl}" target="_blank" rel="noopener" title="عرض الصورة" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;color:#2563EB;text-decoration:none;transition:all 0.15s;" onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></a>` : `<span style="color:#D1D5DB;font-size:11px;">—</span>`}</td><td class="py-3 px-2">${actionButtons}</td></tr>`; 
 
                 }); 
 
@@ -4009,7 +4415,7 @@
 
         }
 
-        function deleteREEntry(id) { let db = getREDB(); db = db.filter(item => item.id !== id); saveREDB(db); renderReDbTable(); populateDropdowns(); showToast("تم الحذف"); }
+        function deleteREEntry(id) { let db = getREDB(); db = db.filter(item => item.id !== id); db = _renumberREDB(db); saveREDB(db); renderReDbTable(); populateDropdowns(); showToast('تم الحذف وإعادة الترقيم'); }
 
         function unreserveREEntry(id) {
 
@@ -5347,6 +5753,105 @@ updateAppField = function(id, field, value) {
 // --- نهاية الكود المحدث V5 ---
 
 </script>
+
+    <!-- ═══════ Modal معاينة الاستيراد ═══════ -->
+    <div id="redbImportPreviewModal" class="hidden fixed inset-0 bg-deep-navy/70 z-[200] flex items-center justify-center backdrop-blur-md">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-[98vw] h-[96vh] flex flex-col border-2 border-royal-gold/20">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center p-6 border-b-2 border-pale-gold shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="bg-gradient-to-br from-info-blue to-sky-600 p-2.5 rounded-xl">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-deep-navy">معاينة الاستيراد - اختر الوحدات المراد إضافتها</h3>
+                        <p class="text-xs font-bold text-dark-gold mt-1">يمكنك اختيار وحدات إضافية لإضافتها وأي وحدات متشابهة لاستبدالها</p>
+                    </div>
+                </div>
+                <button onclick="cancelImportPreview()" class="text-gray-400 hover:text-danger-red bg-gray-50 hover:bg-red-50 p-2.5 rounded-xl transition-colors border border-gray-200">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-3 gap-4 p-4 bg-gradient-to-l from-pale-gold/30 to-transparent border-b border-light-gold shrink-0">
+                <div class="bg-white p-3 rounded-xl border border-emerald-200 flex items-center gap-3">
+                    <div class="bg-emerald-50 p-2 rounded-lg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="flex-1">
+                        <p class="text-[10px] text-gray-500 font-bold">وحدات جديدة (إضافية)</p>
+                        <p id="previewNewCount" class="text-xl font-black text-success-green en-font">0</p>
+                    </div>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-amber-200 flex items-center gap-3">
+                    <div class="bg-amber-50 p-2 rounded-lg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                    <div class="flex-1">
+                        <p class="text-[10px] text-gray-500 font-bold">وحدات متشابهة (موجودة)</p>
+                        <p id="previewDupCount" class="text-xl font-black text-amber-700 en-font">0</p>
+                    </div>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-royal-gold/30 flex items-center gap-3">
+                    <div class="bg-pale-gold p-2 rounded-lg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9B7838" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                    <div class="flex-1">
+                        <p class="text-[10px] text-gray-500 font-bold">المختارة للاستيراد</p>
+                        <p id="previewSelectedCount" class="text-xl font-black text-royal-gold en-font">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="flex items-center gap-2 p-3 bg-gray-50 border-b border-gray-200 shrink-0 flex-wrap">
+                <button onclick="previewToggleAll('new', true)" class="text-xs font-black px-3 py-1.5 rounded-lg bg-success-green/10 text-success-green hover:bg-success-green/20 border border-success-green/30 transition-colors">تحديد كل الجديدة</button>
+                <button onclick="previewToggleAll('new', false)" class="text-xs font-black px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300 transition-colors">إلغاء كل الجديدة</button>
+                <span class="text-gray-300">|</span>
+                <button onclick="previewToggleAll('dup', true)" class="text-xs font-black px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-300 transition-colors">تحديد كل المتشابهة</button>
+                <button onclick="previewToggleAll('dup', false)" class="text-xs font-black px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300 transition-colors">إلغاء كل المتشابهة</button>
+                <div class="flex-1"></div>
+                <span class="text-xs font-bold text-gray-500">يمكنك اختيار صفوف فردية بالضغط على المربع</span>
+            </div>
+
+            <!-- Table Container -->
+            <div class="flex-1 overflow-auto p-4">
+                <table class="w-full text-sm border-collapse">
+                    <thead class="sticky top-0 bg-gradient-to-l from-pale-gold to-white z-10 border-b-2 border-royal-gold/30">
+                        <tr class="text-dark-brown text-right">
+                            <th class="py-3 px-2 w-10 text-center">
+                                <input type="checkbox" id="previewSelectAllCb" onchange="previewToggleAll('all', this.checked)" class="w-4 h-4 cursor-pointer" style="accent-color:#D4AF37;">
+                            </th>
+                            <th class="py-3 px-2 w-12">#</th>
+                            <th class="py-3 px-2">الحالة</th>
+                            <th class="py-3 px-2">المدينة</th>
+                            <th class="py-3 px-2">الحي</th>
+                            <th class="py-3 px-2">النوع</th>
+                            <th class="py-3 px-2">المشروع</th>
+                            <th class="py-3 px-2">المطور</th>
+                            <th class="py-3 px-2">السعر</th>
+                            <th class="py-3 px-2">المساحة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="previewTableBody" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-between items-center p-4 border-t-2 border-pale-gold shrink-0 bg-gradient-to-l from-pale-gold/20 to-transparent">
+                <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="previewReplaceAllCb" class="w-4 h-4 cursor-pointer" style="accent-color:#D4AF37;">
+                        <span class="text-sm font-bold text-dark-brown">استبدال القاعدة بالكامل (حذف الموجود حالياً)</span>
+                    </label>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="cancelImportPreview()" class="bg-gray-100 hover:bg-gray-200 text-dark-brown font-black text-sm px-5 py-2.5 rounded-xl border border-gray-300 transition-colors">إلغاء</button>
+                    <button onclick="confirmImportPreview()" class="flex items-center gap-2 bg-gradient-to-l from-success-green to-emerald-600 hover:from-emerald-600 hover:to-success-green text-white font-black text-sm px-6 py-2.5 rounded-xl shadow-md transition-all">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>تأكيد الاستيراد</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
 </body>
 
